@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 
 const Map = (filtro) => {
 
+    const apiKey = import.meta.env.VITE_API_KEY;
+
     const loadScript = (url, callback) => {
         const script = document.createElement('script');
         script.src = url;
@@ -35,7 +37,7 @@ const Map = (filtro) => {
     
 
     useEffect(() => {
-        loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyDb-5LpSRytYHB8SLCHG8MHj6FxljLj1TQ", () => {
+        loadScript(`https://maps.googleapis.com/maps/api/js?key=${apiKey}`, () => {
             loadScript("https://ajax.googleapis.com/ajax/libs/earthengine/0.1.226/earthengine-api.min.js", () => {
                 initialize();
             });
