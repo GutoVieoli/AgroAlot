@@ -41,7 +41,7 @@ const create = async (requisicao, resposta) => {
         if(nome.length < 4){
             resposta.status(400).send({ message: 'O nome deve ter pelo menos 4 caracteres.'})
         } 
-        else if(senha.length < 6 ){
+        else if(senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)){
             resposta.status(400).send({ message: 'A senha deve ter pelo menos 6 caracteres, além de conter letras e números.'})
         }
         else if ( await existeEmail(email) ) {

@@ -108,6 +108,16 @@ input[type="password"] {
     box-shadow: 0vw 1vh 0.8vw 0vh rgba(0, 0, 0, 0.5);
 }
 
+.btn:disabled {
+    cursor: not-allowed; /* Cursor diferente para indicar que está desabilitado */
+    opacity: 0.65; /* Menos opacidade para indicar que está desabilitado */
+}
+
+.btn:disabled:hover {
+    background-color: #5F6F52;
+    box-shadow: 1vw 0vh 1vw 0vh rgba(75, 75, 75, 0.3);
+}
+
 .or {
     font-weight: 500; 
     font-size: max(1.5vw, 16px); 
