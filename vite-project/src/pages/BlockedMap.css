@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+*{
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+}
+
+.dadosPropriedade{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-top: 17px;
+    color: #3e423a;
+}
+
+.nome{
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.sobre{
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.areaBotoes {
+    
+    width: 100%;
+    height: 90px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.dataFiltro {
+    background-color: #B99470;
+    color: white;
+    height: 45px;
+    border-radius: 10px;
+    padding: 0 10px;
+    font-size: 16px;
+    box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
+}
+::-webkit-calendar-picker-indicator{
+    background-color: #ffffff;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.tipoFiltro {
+    background-color: #B99470;
+    color: white;
+    height: 45px;
+    width: 110px;
+    border-radius: 10px;
+    padding: 0 14px;
+    padding-right: 5px; /* Adicionado padding extra para a seta */
+    font-size: 16px;
+    box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
+    cursor: pointer; 
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="5" viewBox="0 0 10 5"><polygon points="0,0 10,0 5,5" fill="white"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+    box-sizing: border-box; /* Inclui padding e borda na altura total */
+}
+
+
+.aplicarFiltro {
+    background-color: #B99470;
+    color: white;
+    height: 45px;
+    border-radius: 10px;
+    padding: 0 28px;
+    font-size: 16px;
+    box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
+    cursor: pointer;
+}
+
+.textErro{
+    padding: 0px 0 10px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: #530000;
+}

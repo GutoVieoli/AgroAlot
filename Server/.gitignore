@@ -1,0 +1,3 @@
+src/.env
+src/.private-key.json
+node_modules
