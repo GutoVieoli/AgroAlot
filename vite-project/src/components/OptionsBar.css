@@ -81,13 +81,13 @@
 .add-talhao-btn {
     background-color: #34a853;
     color: white;
-    border: none;
-    padding: 15px;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin-top: 20px;
+    display: block; /* Garante que o Link se comporte como um botão */
     text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-decoration: none; /* Remove o sublinhado padrão do Link */
 }
 
 .add-talhao-btn:hover {

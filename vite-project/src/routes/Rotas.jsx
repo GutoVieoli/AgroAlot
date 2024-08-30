@@ -5,6 +5,7 @@ import Home from '../pages/Home'
 import FreeMap from '../pages/FreeMap';
 import BlockedMap from '../pages/BlockedMap';
 import Cadastro from '../components/Cadastro';
+import AddTalhaoPage from '../pages/AddTalhaoPage';
 
 const Private = ({ Pagina }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -61,6 +62,7 @@ const Rotas = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path='*' element={<Login />} />
+            <Route path="/add-talhao" element={<AddTalhaoPage />} />
         </Routes>
     </BrowserRouter> 
   )
