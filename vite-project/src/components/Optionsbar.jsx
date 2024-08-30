@@ -1,32 +1,19 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 import './OptionsBar.css';
-import { useState } from 'react';
 
-const Optionsbar = ({ buttonActive, talhoes }) => {
-    const [expanded, setExpanded] = useState(false);
-
-    const toggleExpand = () => {
-        setExpanded(!expanded);
-    };
-
+const Optionsbar = ({ buttonActive }) => {
     return (
         <div className={`barra-opcoes ${buttonActive ? "active" : "inactive"}`}>
-            <div className="header" onClick={toggleExpand}>
+            <div className="header">
                 <h2>Talhões</h2>
-                <span className={`arrow ${expanded ? "down" : "right"}`}></span>
             </div>
-            {expanded && (
-                <div className="talhoes-list">
-                    {talhoes.map((talhao, index) => (
-                        <div key={index} className="talhao-item">
-                            <span>{talhao}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
-            <button className="add-talhao-btn">
+            <Link to="/add-talhao" className="add-talhao-btn">
                 + Adicionar Talhão
-            </button>
+            </Link>
         </div>
+        
+
     );
 };
 
