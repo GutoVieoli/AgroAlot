@@ -51,11 +51,11 @@
 
 .talhao-item {
     padding: 10px;
-    background-color: #f0f0f0; /* Cor padrão do talhão */
+    background-color: #f0f0f0; /* Cor padrão do talha */
     border-radius: 6px;
     margin-bottom: 10px;
     color: #333;
-    transition: background-color 0.3s ease; /* Transição suave para o hover */
+    transition: background-color 0.3s ease; 
 }
 
 .talhao-item:last-child {
@@ -71,11 +71,11 @@
     top: 10px;
     right: 10px;
     font-size: 24px;
-    color: #555; /* Cor menos chamativa */
+    color: #555; 
 }
 
 .propriedade-item:hover .expand-icon {
-    color: #333; /* Cor mais suave ao passar o mouse */
+    color: #333; 
 }
 
 /* Estilização do título */
@@ -84,8 +84,8 @@
     color: #444;
     text-align: center;
     margin-bottom: 30px;
-    font-weight: 700; /* Mais peso na fonte */
+    font-weight: 700; 
     border-bottom: 2px solid #ccc;
     padding-bottom: 10px;
-    letter-spacing: 1px; /* Espaçamento entre letras */
+    letter-spacing: 1px; 
 }

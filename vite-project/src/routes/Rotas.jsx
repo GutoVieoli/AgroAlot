@@ -4,7 +4,7 @@ import Login from '../pages/Login';
 import Home from '../pages/Home'
 import FreeMap from '../pages/FreeMap';
 import BlockedMap from '../pages/BlockedMap';
-import Cadastro from '../components/Cadastro';
+import Cadastro from '../pages/Cadastro';
 import AddTalhaoPage from '../pages/AddTalhaoPage';
 import TelaPropriedade from '../pages/TelaPropriedade';
 

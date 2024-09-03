@@ -33,8 +33,7 @@ const TelaPropriedade = () => {
     // aqui é teoricamente funcionando com o back
     const carregarPropriedadesDoBackend = async () => {
         try {
-            const response = await fetch('http://localhost:3000/propriedades'); // Substitua pela URL real
-            const data = await response.json();
+            const response = await fetch('http://localhost:3000/propriedades'); 
             setPropriedades(data);
         } catch (error) {
             console.error('Erro ao carregar propriedades:', error);
@@ -43,8 +42,7 @@ const TelaPropriedade = () => {
 
     const handlePropriedadeClick = async (propriedadeId) => {
         if (propriedadeSelecionada === propriedadeId) {
-            setPropriedadeSelecionada(null); // Colapsa o bloco se já estiver selecionado
-        } else {
+            setPropriedadeSelecionada(null); 
             if (usarDadosSimulados) {
                 // Encontre os talhões simulados
                 const propriedadeSelecionada = propriedades.find(p => p.id === propriedadeId);
