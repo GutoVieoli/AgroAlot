@@ -6,6 +6,8 @@ import FreeMap from '../pages/FreeMap';
 import BlockedMap from '../pages/BlockedMap';
 import Cadastro from '../components/Cadastro';
 import AddTalhaoPage from '../pages/AddTalhaoPage';
+import TelaPropriedade from '../pages/TelaPropriedade';
+
 
 const Private = ({ Pagina }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,19 +55,21 @@ const Private = ({ Pagina }) => {
 
 
 const Rotas = () => {
-  return (
-    <BrowserRouter>
-        <Routes>
-            <Route path='/' element={<Private Pagina={Home} />} />
-            <Route path='/mapalivre' element={<Private Pagina={FreeMap} />} />
-            <Route path='/mapapropriedade' element={<Private Pagina={BlockedMap}/>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path='*' element={<Login />} />
-            <Route path="/add-talhao" element={<Private Pagina ={AddTalhaoPage} />} />
-        </Routes>
-    </BrowserRouter> 
-  )
-}
+    return (
+      <BrowserRouter>
+          <Routes>
+              <Route path='/' element={<Private Pagina={Home} />} />
+              <Route path='/mapalivre' element={<Private Pagina={FreeMap} />} />
+              <Route path='/mapapropriedade' element={<Private Pagina={BlockedMap}/>} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/cadastro" element={<Cadastro />} />
+              <Route path="/add-talhao" element={<Private Pagina={AddTalhaoPage} /> } />
+              <Route path="/telapropriedade" element={<Private Pagina={TelaPropriedade} /> } />
+              <Route path='*' element={<Login />} />
+          </Routes>
+      </BrowserRouter> 
+    )
+  }
+  
 
 export default Rotas;
