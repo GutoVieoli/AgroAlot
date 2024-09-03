@@ -33,8 +33,8 @@
 }
 
 .modo-switch button.active {
-    border-color: #34a853; /* Borda verde quando ativo */
-    background-color: #e6e6e6; /* Ligeiramente mais claro quando ativo */
+    border-color: #34a853;
+    background-color: #e6e6e6;
     font-weight: bold;
 }
 
@@ -56,14 +56,25 @@
     color: #555;
 }
 
-.form-group input {
-    padding: 8px;
+.form-group input,
+.form-group select {
+    padding: 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.form-group input:focus {
+.form-group select {
+    appearance: none;
+    background: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23333' d='M2 0L0 2h4zM0 3l2 2 2-2z'/></svg>") no-repeat right 10px center;
+    background-color: white;
+    background-size: 12px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
     border-color: #34a853;
     outline: none;
 }
@@ -97,7 +108,7 @@
 }
 
 .remove-coordenada-btn:hover {
-    background-color: #ff4d4d; /* Vermelho ao passar o mouse */
+    background-color: #ff4d4d;
 }
 
 .add-coordenada-btn {
@@ -114,7 +125,7 @@
 }
 
 .add-coordenada-btn:hover {
-    background-color: #34a853; /* Verde ao passar o mouse */
+    background-color: #34a853;
 }
 
 .submit-btn {
@@ -135,4 +146,24 @@
 .submit-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+.suggestions-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestions-list li {
+    padding: 10px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0;
 }

@@ -62,7 +62,7 @@ const Rotas = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path='*' element={<Login />} />
-            <Route path="/add-talhao" element={<AddTalhaoPage />} />
+            <Route path="/add-talhao" element={<Private Pagina ={AddTalhaoPage} />} />
         </Routes>
     </BrowserRouter> 
   )
