@@ -11,29 +11,21 @@ CREATE TABLE IF NOT EXISTS usuarios (
 );
 
 CREATE TABLE IF NOT EXISTS propriedades (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(128) NOT NULL,
-    uf VARCHAR(2),
-    id_usuario VARCHAR(64),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    id_usuario VARCHAR(64) NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS talhoes (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(255) NOT NULL,
+    nome VARCHAR(128) NOT NULL,
     cultura VARCHAR(255) NOT NULL,
     area DECIMAL(10, 2) NOT NULL,
-    id_propriedade INT,
-    FOREIGN KEY (id_propriedade) REFERENCES propriedades(id)
-);
-
-CREATE TABLE IF NOT EXISTS coordenadas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    latitude DECIMAL(9, 6) NOT NULL,
-    longitude DECIMAL(9, 6) NOT NULL,
-    ordem INT NOT NULL,
-    id_talhao INT,
-    FOREIGN KEY (id_talhao) REFERENCES talhoes(id)
+    geojson_data JSON NOT NULL,
+    id_propriedade INT NOT NULL,
+    FOREIGN KEY (id_propriedade) REFERENCES propriedades(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ndvi (
