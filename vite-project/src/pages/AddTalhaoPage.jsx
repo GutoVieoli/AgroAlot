@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
@@ -11,28 +11,56 @@ const AddTalhaoPage = () => {
     const [erroMsg, setErroMsg] = useState('');
     const [sugestoes, setSugestoes] = useState([]);
     const [isFocused, setIsFocused] = useState(false);
+    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([])
 
-    const propriedadesCadastradas = [  // pra testar autocomplete
-        "Fazenda Boa Vista",
-        "Sítio Santa Cruz",
-        "Chácara dos Pinhais",
-        "Fazenda Esperança",
-        "Sítio São José",
-        "Chácara Bela Vista"
-    ];
-
-    const culturas = [ 
-        "Soja",
-        "Milho",
-        "Cana-de-Açúcar",
-        "Café",
+    const culturas = [
         "Algodão",
-        "Trigo",
         "Arroz",
+        "Café",
+        "Cana-de-Açúcar",
         "Feijão",
-        "Laranja",
-        "Banana"
+        "Milho",
+        "Pasto", 
+        "Soja",
+        "Sorgo",
+        "Trigo",
     ];
+
+
+    // Função para buscar as propriedades cadastradas da API assim que a página carregar
+    useEffect(() => {
+        const fetchPropriedades = async () => {
+            try {
+                const token = localStorage.getItem('tokenJWT');
+                const response = await fetch('http://localhost:3000/propriedades/listar', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ jwt: token })
+                });
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar propriedades cadastradas.');
+                }
+                const data = await response.json();
+                const nomesPropriedades = data.propriedades.map(propriedade => propriedade.nome);
+                setPropriedadesCadastradas(nomesPropriedades); // Preenche apenas com os nomes
+
+            } catch (error) {
+                console.error('Erro ao buscar propriedades:', error);
+                setErroMsg('Erro ao carregar propriedades cadastradas.');
+            }
+        };
+
+        fetchPropriedades(); // Chama a função assim que o componente for montado
+    }, []);
+
+
+    const handlePropriedadeFocus = () => {
+        // Quando o campo de propriedade é focado, mostrar todas as propriedades cadastradas
+        setSugestoes(propriedadesCadastradas);
+        setIsFocused(true);
+    };
 
     const handlePropriedadeChange = (e) => {
         const valor = e.target.value;
@@ -152,6 +180,7 @@ const AddTalhaoPage = () => {
     return (
         <div>
             <Topbar />
+
             <div className="add-talhao-container">
                 <h1>Adicionar Novo Talhão</h1>
                 <div className="modo-switch">
@@ -171,53 +200,55 @@ const AddTalhaoPage = () => {
 
                 {erroMsg && <p className="error-message">{erroMsg}</p>}
 
-                {modo === 'manual' && (
-                    <form onSubmit={handleSubmitManual} className="add-talhao-form">
-                        <div className="form-group">
-                            <label htmlFor="propriedade">Propriedade</label>
-                            <input 
-                                type="text" 
-                                id="propriedade" 
-                                value={propriedade} 
-                                onChange={handlePropriedadeChange}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setTimeout(() => setIsFocused(false), 100)}
-                                required 
-                            />
-                            {isFocused && sugestoes.length > 0 && (
-                                <ul className="suggestions-list">
-                                    {sugestoes.map((sugestao, index) => (
-                                        <li key={index} onClick={() => handleSugestaoClick(sugestao)}>
-                                            {sugestao}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="nome">Nome do Talhão</label>
-                            <input 
-                                type="text" 
-                                id="nome" 
-                                value={nome} 
-                                onChange={(e) => setNome(e.target.value)} 
-                                required 
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="cultura">Cultura</label>
-                            <select 
-                                id="cultura" 
-                                value={cultura} 
-                                onChange={(e) => setCultura(e.target.value)} 
-                                required
-                            >
-                                <option value="">Selecione uma cultura</option>
-                                {culturas.map((cultura, index) => (
-                                    <option key={index} value={cultura}>{cultura}</option>
+                {/* {modo === 'manual' && ( */}
+                <form onSubmit={handleSubmitManual} className="add-talhao-form">
+                    <div className="form-group">
+                        <label htmlFor="propriedade">Propriedade</label>
+                        <input 
+                            type="text" 
+                            id="propriedade" 
+                            value={propriedade} 
+                            onChange={handlePropriedadeChange}
+                            onFocus={handlePropriedadeFocus}      // Mostrar sugestões quando o campo é focado
+                            onBlur={() => setTimeout(() => setIsFocused(false), 100)} // Fecha as sugestões ao perder o foco
+                            required 
+                        />
+                        {isFocused && sugestoes.length > 0 && (
+                            <ul className="suggestions-list">
+                                {sugestoes.map((sugestao, index) => (
+                                    <li key={index} onClick={() => handleSugestaoClick(sugestao)}>
+                                        {sugestao}
+                                    </li>
                                 ))}
-                            </select>
-                        </div>
+                            </ul>
+                        )}
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="nome">Nome do Talhão</label>
+                        <input 
+                            type="text" 
+                            id="nome" 
+                            value={nome} 
+                            onChange={(e) => setNome(e.target.value)} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="cultura">Cultura</label>
+                        <select 
+                            id="cultura" 
+                            value={cultura} 
+                            onChange={(e) => setCultura(e.target.value)} 
+                            required
+                        >
+                            <option value="">Selecione uma cultura</option>
+                            {culturas.map((cultura, index) => (
+                                <option key={index} value={cultura}>{cultura}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {modo === 'manual' && (
                         <div className="form-group coordenadas-group">
                             <label>Coordenadas</label>
                             {coordenadas.map((coord, index) => (
@@ -244,64 +275,16 @@ const AddTalhaoPage = () => {
                                 + Adicionar Coordenada
                             </button>
                         </div>
-                        <button type="submit" className="submit-btn">Adicionar Talhão</button>
-                    </form>
-                )}
+                    )}
 
-                {modo === 'arquivo' && (
-                    <form onSubmit={handleSubmitArquivo} className="add-talhao-form">
-                        <div className="form-group">
-                            <label htmlFor="propriedade">Propriedade</label>
-                            <input 
-                                type="text" 
-                                id="propriedade" 
-                                value={propriedade} 
-                                onChange={handlePropriedadeChange}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setTimeout(() => setIsFocused(false), 100)}
-                                required 
-                            />
-                            {isFocused && sugestoes.length > 0 && (
-                                <ul className="suggestions-list">
-                                    {sugestoes.map((sugestao, index) => (
-                                        <li key={index} onClick={() => handleSugestaoClick(sugestao)}>
-                                            {sugestao}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="nome">Nome do Talhão</label>
-                            <input 
-                                type="text" 
-                                id="nome" 
-                                value={nome} 
-                                onChange={(e) => setNome(e.target.value)} 
-                                required 
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="cultura">Cultura</label>
-                            <select 
-                                id="cultura" 
-                                value={cultura} 
-                                onChange={(e) => setCultura(e.target.value)} 
-                                required
-                            >
-                                <option value="">Selecione uma cultura</option>
-                                {culturas.map((cultura, index) => (
-                                    <option key={index} value={cultura}>{cultura}</option>
-                                ))}
-                            </select>
-                        </div>
+                    {modo === 'arquivo' && (
                         <div className="form-group">
                             <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
                             <input type="file" id="arquivo" accept=".json,.geojson" required />
                         </div>
-                        <button type="submit" className="submit-btn">Adicionar Talhão</button>
-                    </form>
-                )}
+                    )}
+                    <button type="submit" className="submit-btn">Adicionar Talhão</button>
+                </form>
             </div>
         </div>
     );

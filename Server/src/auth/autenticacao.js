@@ -11,15 +11,26 @@ const gerarToken = (id, nome) => {
         },
         secretKey,
         {
-            expiresIn: "10s"
+            expiresIn: "600s"
         }
     );
     return token;
 }
 
 const getID = (token) => {
+    const payload = jwt.verify(token, secretKey, (err, payload) => {
+        if(err){
+            return ''
+        } else {
+            return payload.id
+        }
+    });
+    return payload;
+}
+
+const getNome = (token) => {
     const payload = jwt.verify(token, secretKey);
-    return payload.id;
+    return payload.nome;
 }
 
 const autenticacao = (req, response) => {
@@ -41,4 +52,4 @@ const autenticacao = (req, response) => {
 }
 
 
-module.exports = { gerarToken, autenticacao, getID };
+module.exports = { gerarToken, autenticacao, getID, getNome };
