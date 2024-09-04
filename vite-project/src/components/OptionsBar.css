@@ -1,19 +1,9 @@
-@keyframes navbar_in {
-    0% {
-        width: 0vw;
-    }
-}
-
-@keyframes navbar_out {
-    0% {
-        width: 0vw;
-    }
-
-}
-
 .barra-opcoes {
-    position: fixed;
-    height: 90vh;
+    position: fixed; /* Usamos fixed para manter a barra lateral ancorada ao viewport */
+    top: 95px; /* Altura da top bar, ajuste conforme necessário */
+    left: 0;
+    bottom: 0; /* Isso garante que a barra lateral se estenda até o final da tela */
+    width: 20vw;
     padding: 10px;
     background-color: #B99470;
     color: white;
@@ -21,17 +11,13 @@
 
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
 
-    /* opacity: 1; */
-
-    animation-name: navbar_out;
-    animation-duration: 1s;
     z-index: 5;
 }
 
 .barra-opcoes.active {
     width: 20vw;
-
     animation-name: navbar_in;
     animation-duration: 0.6s;
 }
@@ -44,17 +30,66 @@
     animation-duration: 1s;
 }
 
-/* .barra-opcoes {
-    position: absolute;
-    width: 20vw;
-    height: 90vh;
-    padding: 10px;
-    background-color: #B99470;
-    
+.header {
     display: flex;
-    flex-direction: column;
-    opacity: 1;
-    
-    animation-name: navbar_in;
-    animation-duration: 1s;
-} */
+    align-items: center;
+    justify-content: space-between;
+    background-color: #A67854;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.header h2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+}
+
+.arrow {
+    width: 0; 
+    height: 0; 
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid white;
+    transition: transform 0.2s ease;
+}
+
+.arrow.down {
+    transform: rotate(90deg);
+}
+
+.talhoes-list {
+    margin-top: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.talhao-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    color: #555;
+    background-color: #E8D7C5;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.add-talhao-btn {
+    background-color: #34a853;
+    color: white;
+    display: block; /* Garante que o Link se comporte como um botão */
+    text-align: center;
+    padding: 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-decoration: none; /* Remove o sublinhado padrão do Link */
+}
+
+.add-talhao-btn:hover {
+    background-color: #2c8e44;
+}

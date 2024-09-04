@@ -1,0 +1,169 @@
+.add-talhao-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.add-talhao-container h1 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.modo-switch {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.modo-switch button {
+    background-color: #ccc;
+    border: 2px solid transparent;
+    padding: 8px 16px;
+    margin: 0 3px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    color: #333;
+}
+
+.modo-switch button.active {
+    border-color: #34a853;
+    background-color: #e6e6e6;
+    font-weight: bold;
+}
+
+.add-talhao-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group select {
+    appearance: none;
+    background: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23333' d='M2 0L0 2h4zM0 3l2 2 2-2z'/></svg>") no-repeat right 10px center;
+    background-color: white;
+    background-size: 12px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #34a853;
+    outline: none;
+}
+
+.coordenadas-group {
+    text-align: left;
+}
+
+.coordenada-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.coordenada-item input {
+    flex-grow: 1;
+    margin-right: 8px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.remove-coordenada-btn {
+    background-color: #ccc;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    font-size: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-coordenada-btn:hover {
+    background-color: #ff4d4d;
+}
+
+.add-coordenada-btn {
+    background-color: #ccc;
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.add-coordenada-btn:hover {
+    background-color: #34a853;
+}
+
+.submit-btn {
+    background-color: #34a853;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #2c8e44;
+}
+
+.submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.suggestions-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestions-list li {
+    padding: 10px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0;
+}

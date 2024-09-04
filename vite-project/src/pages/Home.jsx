@@ -14,13 +14,13 @@ const Home = () => {
         <h1>Mapa Livre</h1>
       </Link>
 
-      <Link to='/mapapropriedade' className={styles.block} style={{ backgroundImage: `url(${sojaImage})` }}>
-        <h1>Talhões</h1>
+      <Link to='/telapropriedade' className={styles.block} style={{ backgroundImage: `url(${sojaImage})` }}>
+        <h1>Propriedeades e culturas</h1>
       </Link>
 
-      <div className={styles.block} style={{ backgroundImage: `url(${sojaImage})` }}>
+      <Link to='/add-talhao' className={styles.block} style={{ backgroundImage: `url(${sojaImage})` }}>
         <h1>Adicionar Talhões</h1>
-      </div>
+      </Link>
 
     </div>
   );
