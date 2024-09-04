@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Cadastro.css';
 import styles from './Login.module.css'
 
 const Cadastro = () => {
@@ -93,8 +92,6 @@ const Cadastro = () => {
                             <p>É rápido e fácil.</p>
                         </div>
 
-                        {erroMsg && <p className={styles.erro}>{erroMsg}</p>}
-
                         <input 
                             onChange={(event) => handleChange(event, 0)} 
                             className={styles.campos} 
@@ -120,6 +117,7 @@ const Cadastro = () => {
                             placeholder="Confirme a senha" 
                         />
 
+                        {erroMsg && <p className={styles.erro}>{erroMsg}</p>}
                         {senha !== '' && confirmaSenha !== '' && senha !== confirmaSenha && (
                             <p className={styles.erro}>As senhas são diferentes</p>
                         )}
