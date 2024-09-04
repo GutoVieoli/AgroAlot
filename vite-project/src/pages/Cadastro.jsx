@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Cadastro.css';
+import styles from './Login.module.css'
 
 const Cadastro = () => {
 
@@ -11,7 +12,7 @@ const Cadastro = () => {
     const [confirmaSenha, setConfirmaSenha] = useState('');
     const navigate = useNavigate();
 
-    const erroNome = 'O nome deve ter pelo menos 4 caracteres.';
+    const erroNome = 'O nome deve ter pelo menos 4 letras.';
     const erroEmail = 'Insira um email válido.';
 
     const handleChange = (event, index) => {
@@ -80,53 +81,72 @@ const Cadastro = () => {
     }
 
     return (
-        <div className="cadastro-container">
-            <div className="cadastro-box">
-                <h1>Cadastre-se</h1>
-                <p>É rápido e fácil.</p>
+        <div className={styles.alinhador}>
 
-                {erroMsg && <p className="erro-msg">{erroMsg}</p>}
+            <form className={styles.loginbubble} >
+                <div className={styles.alignbubble}>
 
-                <input 
-                    onChange={(event) => handleChange(event, 0)} 
-                    className="input-campo" 
-                    type="text" 
-                    placeholder="Nome" 
-                />
-                <input 
-                    onChange={(event) => handleChange(event, 1)} 
-                    className="input-campo" 
-                    type="email" 
-                    placeholder="Email" 
-                />
-                <input 
-                    onChange={(event) => handleChange(event, 2)} 
-                    className="input-campo" 
-                    type="password" 
-                    placeholder="Senha" 
-                />
-                <input 
-                    onChange={(event) => handleChange(event, 3)} 
-                    className="input-campo" 
-                    type="password" 
-                    placeholder="Confirme a senha" 
-                />
+                    <div className={styles.secEsquerda}>
 
-                {senha !== '' && confirmaSenha !== '' && senha !== confirmaSenha && (
-                    <p className="erro-msg">As senhas são diferentes</p>
-                )}
+                        <div className={styles.titulos}>
+                            <h1>Cadastre-se</h1>
+                            <p>É rápido e fácil.</p>
+                        </div>
 
-                <button 
-                    className="btn-cadastro"  
-                    onClick={handleApply} 
-                    type="submit"
-                    disabled={!isButtonEnabled()}
-                > 
-                    Criar 
-                </button>
-                <p className="or">ou</p>
-                <button className="btn-cadastro" type="button" onClick={() => navigate('/')}>Voltar</button>
-            </div>
+                        {erroMsg && <p className={styles.erro}>{erroMsg}</p>}
+
+                        <input 
+                            onChange={(event) => handleChange(event, 0)} 
+                            className={styles.campos} 
+                            type="text" 
+                            placeholder="Nome" 
+                        />
+                        <input 
+                            onChange={(event) => handleChange(event, 1)} 
+                            className={styles.campos} 
+                            type="email" 
+                            placeholder="Email" 
+                        />
+                        <input 
+                            onChange={(event) => handleChange(event, 2)} 
+                            className={styles.campos} 
+                            type="password" 
+                            placeholder="Senha" 
+                        />
+                        <input 
+                            onChange={(event) => handleChange(event, 3)} 
+                            className={styles.campos} 
+                            type="password" 
+                            placeholder="Confirme a senha" 
+                        />
+
+                        {senha !== '' && confirmaSenha !== '' && senha !== confirmaSenha && (
+                            <p className={styles.erro}>As senhas são diferentes</p>
+                        )}
+
+                        <button 
+                            className={styles.btn} 
+                            onClick={handleApply} 
+                            type="submit"
+                            disabled={!isButtonEnabled()}
+                            > Criar 
+                        </button>
+                        <p className={styles.or}>ou</p>
+                        <button 
+                            className={styles.btn}  
+                            type="button" 
+                            onClick={() => navigate('/')}
+                            >Voltar
+                        </button>
+                    </div>
+
+                    <div className={styles.secDireita}>
+                        {/* <img src={Logo} style={{width: '60%', opacity: '0.9'}}></img> */}
+                    </div>
+
+                </div>
+            </form>
+
         </div>
     );
 };
