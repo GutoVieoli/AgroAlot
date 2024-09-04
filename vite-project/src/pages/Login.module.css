@@ -1,5 +1,6 @@
 .alinhador{
     background-color: #B99470;
+    background-image:linear-gradient(rgba(185, 148, 112, 0.85), rgba(185, 148, 112, 0.8)), url('..\assets\backgoundHome.webp');
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -173,7 +174,7 @@ input[type="password"] {
         align-items: center;
         justify-content: center;
 
-        background-image: linear-gradient(#ffe3c29a, #fce7cfce), url("../assets/backgroundLogin.jpg");
+        background-image: linear-gradient(#b9a3899a, #fce7cfce), url("../assets/backgroundLogin.jpg");
         background-size: cover;
         background-position: 50%;
         border-radius: 3vw;
