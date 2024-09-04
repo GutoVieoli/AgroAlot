@@ -9,9 +9,14 @@
 }
 
 .add-talhao-container h1 {
-    color: #333;
-    margin-bottom: 15px;
-    font-size: 22px;
+    font-size: 28px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700; 
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    letter-spacing: 1px;
 }
 
 .modo-switch {

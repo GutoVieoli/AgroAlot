@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import './TelaPropriedade.css';
+import { Link, useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
+import PropriedadeItem from '../components/PropriedadeItem';
+import './TelaPropriedade.css';
 
 const TelaPropriedade = () => {
     const [propriedades, setPropriedades] = useState([]);
     const [propriedadeSelecionada, setPropriedadeSelecionada] = useState(null);
-    const usarDadosSimulados = true;  // Se colocar false teoricamente e pra pegar os daddos do bd
+    const [adicionarPropriedade, setAdicionarPropriedade] = useState(false);
+    const [novoNomePropriedade, setNovoNomePropriedade] = useState('');
+    const navigate = useNavigate();
+
+    const usarDadosSimulados = true;
+
     useEffect(() => {
         if (usarDadosSimulados) {
             carregarDadosSimulados();
@@ -15,7 +21,6 @@ const TelaPropriedade = () => {
         }
     }, []);
 
-    // usei de exemplo
     const carregarDadosSimulados = () => {
         const dadosSimulados = [
             { id: 1, nome: 'Fazenda Boa Vista', localizacao: 'Alfenas, MG', areaTotal: 500, talhoes: [
@@ -30,36 +35,55 @@ const TelaPropriedade = () => {
         setPropriedades(dadosSimulados);
     };
 
-    // aqui é teoricamente funcionando com o back
     const carregarPropriedadesDoBackend = async () => {
         try {
             const response = await fetch('http://localhost:3000/propriedades'); 
+            const data = await response.json();
             setPropriedades(data);
         } catch (error) {
             console.error('Erro ao carregar propriedades:', error);
         }
     };
 
-    const handlePropriedadeClick = async (propriedadeId) => {
-        if (propriedadeSelecionada === propriedadeId) {
-            setPropriedadeSelecionada(null); 
-            if (usarDadosSimulados) {
-                // Encontre os talhões simulados
-                const propriedadeSelecionada = propriedades.find(p => p.id === propriedadeId);
-                setPropriedadeSelecionada(propriedadeId);
-            } else {
-                try {
-                    const response = await fetch(`http://localhost:3000/propriedades`); 
-                    const data = await response.json();
-                    const propriedadesAtualizadas = propriedades.map(propriedade => 
-                        propriedade.id === propriedadeId ? { ...propriedade, talhoes: data } : propriedade
-                    );
-                    setPropriedades(propriedadesAtualizadas);
-                    setPropriedadeSelecionada(propriedadeId); 
-                } catch (error) {
-                    console.error('Erro ao carregar talhões:', error);
-                }
+    const handlePropriedadeClick = (propriedadeId) => {
+        setPropriedadeSelecionada(propriedadeId === propriedadeSelecionada ? null : propriedadeId);
+    };
+
+    // Expande o bloco de adicionar propriedade
+    const handleAdicionarClick = (e) => {
+        e.stopPropagation();  // Evita fechamento ao clicar no campo
+        setAdicionarPropriedade(true);
+    };
+
+    // Fecha o bloco de adicionar propriedade
+    const handleFecharAdicionar = (e) => {
+        e.stopPropagation();
+        setAdicionarPropriedade(false);
+    };
+
+    // Controla a entrada do nome da propriedade
+    const handleNomePropriedadeChange = (e) => {
+        setNovoNomePropriedade(e.target.value);
+    };
+
+    // Envia os dados da nova propriedade para o backend e navega para a página de adicionar talhão
+    const handleIrParaTalhao = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/propriedades', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nome: novoNomePropriedade }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar a propriedade');
             }
+
+            navigate('/add-talhao');
+        } catch (error) {
+            console.error('Erro ao enviar dados:', error);
         }
     };
 
@@ -70,38 +94,36 @@ const TelaPropriedade = () => {
                 <h1>Propriedades Cadastradas</h1>
                 <div className="propriedades-lista">
                     {propriedades.map(propriedade => (
-                        <div 
-                            key={propriedade.id} 
-                            className={`propriedade-item ${propriedade.id === propriedadeSelecionada ? 'expanded' : ''}`}
-                            onClick={() => handlePropriedadeClick(propriedade.id)}
-                        >
-                            <h3>{propriedade.nome}</h3>
-                            {propriedade.id === propriedadeSelecionada && (
-                                <div className="talhoes-detalhes">
-                                    <h4>Detalhes da Propriedade:</h4>
-                                    <p>Localização: {propriedade.localizacao}</p>
-                                    <p>Área Total: {propriedade.areaTotal} ha</p>
-                                    <h4>Talhões:</h4>
-                                    {propriedade.talhoes && propriedade.talhoes.length > 0 ? (
-                                        propriedade.talhoes.map(talhao => (
-                                            <Link 
-                                                to={`/mapapropriedade?talhaoId=${talhao.id}`}
-                                                key={talhao.id} 
-                                                className="talhao-item"
-                                            >
-                                                {talhao.nome} - Área: {talhao.area} ha
-                                            </Link>
-                                        ))
-                                    ) : (
-                                        <p>Nenhum talhão cadastrado para esta propriedade.</p>
-                                    )}
-                                </div>
-                            )}
-                            <div className="expand-icon">
-                                {propriedade.id === propriedadeSelecionada ? '-' : '+'}
-                            </div>
-                        </div>
+                        <PropriedadeItem
+                            key={propriedade.id}
+                            propriedade={propriedade}
+                            propriedadeSelecionada={propriedadeSelecionada}
+                            handlePropriedadeClick={handlePropriedadeClick}
+                        />
                     ))}
+                    {/* Bloco para adicionar nova propriedade */}
+                    <div
+                        className={`propriedade-item add-propriedade ${adicionarPropriedade ? 'expanded' : ''}`}
+                        onClick={handleAdicionarClick}
+                    >
+                        {adicionarPropriedade ? (
+                            <div className="adicionar-propriedade-detalhes" onClick={(e) => e.stopPropagation()}>
+                                <button onClick={handleFecharAdicionar} className="fechar-adicionar">X</button>
+                                <input 
+                                    type="text" 
+                                    placeholder="Nome da Propriedade" 
+                                    value={novoNomePropriedade}
+                                    onChange={handleNomePropriedadeChange}
+                                    className="input-propriedade"
+                                />
+                                <button onClick={handleIrParaTalhao} className="botao-ir-talhao">
+                                    Adicionar Talhão
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="add-icon">+</div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
