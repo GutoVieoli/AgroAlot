@@ -78,7 +78,7 @@ const login = async (requisicao, resposta) => {
             if( bcrypt.hashSync(senha, salt) === senhaBD){                   // Senha aceita
                 const nome = procuraConta.dataValues.nome;
                 const id = procuraConta.dataValues.id;
-                const token = gerarToken(nome, id);
+                const token = gerarToken(id, nome);
                 resposta.status(201).send({
                     message: 'Usuario autenticado com sucesso!',
                     token: token

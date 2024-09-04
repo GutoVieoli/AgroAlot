@@ -1,5 +1,5 @@
 const propriedades = require('../models/propriedades.model');
-const { getID } = require('../auth/autenticacao');
+const { getID, getNome } = require('../auth/autenticacao');
 const { where } = require('sequelize');
 
 

@@ -5,8 +5,8 @@ const router = express.Router();
 router.use(express.json());
 
 
-router.get('/criar', propriedades.cadastrarPropriedade);
-router.get('/listar', propriedades.listarPropriedades);
+router.post('/criar', propriedades.cadastrarPropriedade);
+router.post('/listar', propriedades.listarPropriedades);
 
 
 module.exports = {
