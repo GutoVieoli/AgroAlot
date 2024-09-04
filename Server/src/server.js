@@ -11,11 +11,11 @@ app.use(express.json());
 
 const mapRoutes = require('./routes/map.routes');
 const usuariosRoutes = require('./routes/usuarios.routes');
+const propriedadesRoutes = require('./routes/propriedades.routes')
 
 app.use('/requestMap', mapRoutes.router);
 app.use('/', usuariosRoutes.router);
-
-
+app.use('/propriedades', propriedadesRoutes.router);
 
 
 const port = process.env.PORT || 3000;

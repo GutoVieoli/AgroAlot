@@ -12,7 +12,7 @@ const propriedades = db.define('propriedades', {
         type: Sequelize.STRING,
         allowNull: false
     },
-    uf: {
+    descricao: {
         type: Sequelize.STRING,
         allowNull: true
     },
