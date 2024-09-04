@@ -11,15 +11,21 @@ const gerarToken = (id, nome) => {
         },
         secretKey,
         {
-            expiresIn: "60s"
+            expiresIn: "600s"
         }
     );
     return token;
 }
 
 const getID = (token) => {
-    const payload = jwt.verify(token, secretKey);
-    return payload.id;
+    const payload = jwt.verify(token, secretKey, (err, payload) => {
+        if(err){
+            return ''
+        } else {
+            return payload.id
+        }
+    });
+    return payload;
 }
 
 const getNome = (token) => {
