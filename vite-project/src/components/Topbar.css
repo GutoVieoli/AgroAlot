@@ -4,6 +4,7 @@
   
 body {
     background-color: #FEFAE0; 
+    background-image:linear-gradient(rgba(254, 250, 224, 0.91), rgba(254, 250, 224, 0.91)), url('../assets/backgoundHome.webp');
 }
 
 .topBar{

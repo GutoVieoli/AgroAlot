@@ -6,11 +6,11 @@ const Login = () => {
 
     const [senha, setSenha] = useState('')
     const [email, setEmail] = useState('')
+    const [erroMsg, setErroMsg] = useState('')
     const navigate = useNavigate()
 
     const handleChange = (event, index) => {
         const valor = event.target.value;
-        console.log('Escrevendo...', event.target.value)
 
         switch(index){
             case 1:
@@ -34,15 +34,14 @@ const Login = () => {
             .then((response) => {
                 if ( !response.ok ){
                     return response.json().then((error) => {
-                    
-                        throw new Error(`HTTP error! status: ${response.status}, message: ainda nao tem message`);
+                        setErroMsg(error.message)
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${error.message}`);
                     });
                 }
                 return response.json()
             })
             .then((data) => {
                 localStorage.setItem('tokenJWT', data.token);
-                console.log(data.token);
                 navigate('/')
             })
             .catch((error) => {
@@ -78,6 +77,9 @@ const Login = () => {
                             onChange={(event) => handleChange(event, 2)} 
                             className={styles.campos} type="password" placeholder='Senha' />
                         <br></br>
+
+                        {erroMsg && <p className={styles.erro}>{erroMsg}</p>}
+
                         <button 
                             onClick={(e) => handleApply(e)}
                             className={styles.btn} > Continuar 
