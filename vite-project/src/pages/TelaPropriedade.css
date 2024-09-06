@@ -1,69 +1,60 @@
 .tela-propriedade-container {
     padding: 20px;
-    max-width: 900px;
+    max-width: 1200px;
     margin: auto;
 }
 
 .propriedades-lista {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
 }
 
+/* Estilo dos nomes das propriedades */
+.propriedade-item h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px; /* Ajuste no tamanho da fonte */
+    color: #333;
+    font-weight: 600;
+    letter-spacing: 1.2px; /* Espaçamento entre letras */
+    text-transform: capitalize; /* Primeira letra de cada palavra em maiúscula */
+}
+
+
+/* Estilo do título "Propriedades Cadastradas" */
+.tela-propriedade-container h1 {
+    font-size: 32px; /* Tamanho da fonte */
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700; /* Peso maior na fonte */
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    letter-spacing: 1.5px; /* Espaçamento entre letras */
+    text-transform: uppercase; /* Tudo em maiúsculas para destaque */
+}
+
+/* Estilo para as caixas de propriedade */
 .propriedade-item {
     position: relative;
-    padding: 20px;
-    background-color: #b0b0b0; /* Cor menos vibrante */
-    border-radius: 8px;
+    padding: 30px;
+    background-color: #667753;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 150px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.propriedade-item h3 {
-    margin: 0;
-    text-align: center;
-    font-size: 18px;
-    color: #333;
-    font-weight: 600; /* Estilizando a fonte */
+    min-height: 250px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .propriedade-item.expanded {
-    background-color: #ffffff; /* Cor menos vibrante para o estado expandido */
-    color: rgb(80, 80, 80);
-    min-height: 250px;
-    grid-column: span 2; /* Expande para duas colunas quando selecionado */
-}
-
-.propriedade-item.expanded .talhoes-detalhes {
-    margin-top: 20px;
-    width: 100%;
-}
-
-.talhoes-detalhes h4 {
-    margin-bottom: 10px;
-}
-
-.talhao-item {
-    padding: 10px;
-    background-color: #f0f0f0; /* Cor padrão do talha */
-    border-radius: 6px;
-    margin-bottom: 10px;
-    color: #333;
-    transition: background-color 0.3s ease; 
-}
-
-.talhao-item:last-child {
-    margin-bottom: 0;
-}
-
-.talhao-item:hover {
-    background-color: #b0b0b0; /* Cor cinza ao passar o mouse */
+    background-color: #e0e0e0;
+    min-height: 350px;
+    grid-column: span 2;
 }
 
 .expand-icon {
@@ -71,21 +62,121 @@
     top: 10px;
     right: 10px;
     font-size: 24px;
-    color: #555; 
+    color: #555;
+    cursor: pointer;
 }
 
-.propriedade-item:hover .expand-icon {
-    color: #333; 
+/* Estilo específico para a caixa de adicionar propriedade */
+.add-propriedade {
+    background-color: #e0e0e0;
+    border: 2px dashed #b0b0b0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    font-size: 40px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    min-height: 250px;
+    text-decoration: none;
+    position: relative;
 }
 
-/* Estilização do título */
-.tela-propriedade-container h1 {
-    font-size: 28px;
-    color: #444;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 700; 
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    letter-spacing: 1px; 
+.add-propriedade.expanded {
+    min-height: 400px;
+    justify-content: flex-start;
+}
+
+/* Estilo para o conteúdo da caixa de adicionar propriedade */
+.adicionar-propriedade-detalhes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 40px;
+}
+
+.adicionar-propriedade-detalhes input, .adicionar-propriedade-detalhes textarea {
+    width: 90%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.input-descricao {
+    height: 80px; /* Tamanho da caixa de texto */
+}
+
+.botao-adicionar-propriedade {
+    background-color: #5F6F52;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao-adicionar-propriedade:hover {
+    background-color: #4a5a40;
+}
+
+/* Posicionamento do "+" no centro da caixa de adicionar propriedade */
+.add-icon {
+    font-size: 48px;
+    color: #5F6F52;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Botão de fechar "X" */
+.fechar-adicionar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.fechar-adicionar:hover {
+    color: #5F6F52;
+}
+
+/* Estilo para o talhão */
+.talhoes-detalhes {
+    width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: left;
+    color: #333;
+}
+
+.talhao-item {
+    padding: 12px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: #333;
+    transition: background-color 0.3s ease;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.talhao-item:hover {
+    background-color: #b0b0b0;
+}
+
+.talhao-item:last-child {
+    margin-bottom: 0;
 }

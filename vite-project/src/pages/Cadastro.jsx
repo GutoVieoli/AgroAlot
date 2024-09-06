@@ -79,6 +79,11 @@ const Cadastro = () => {
         return emailRegex.test(email);
     }
 
+    const handleCadastro = (e) => {
+        e.preventDefault();
+        navigate('/login');
+    }
+
     return (
         <div className={styles.alinhador}>
 
@@ -133,7 +138,7 @@ const Cadastro = () => {
                         <button 
                             className={styles.btn}  
                             type="button" 
-                            onClick={() => navigate('/')}
+                            onClick={(e) => handleCadastro(e)}
                             >Voltar
                         </button>
                     </div>

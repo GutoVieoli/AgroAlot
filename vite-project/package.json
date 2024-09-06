@@ -12,8 +12,9 @@
   "dependencies": {
     "@google/earthengine": "^0.1.403",
     "@turf/turf": "^7.0.0",
-    "chart.js": "^4.4.3",
+    "chart.js": "^4.4.4",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
     "react-svg": "^16.1.34"

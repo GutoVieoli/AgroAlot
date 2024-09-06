@@ -11,26 +11,36 @@ const gerarToken = (id, nome) => {
         },
         secretKey,
         {
-            expiresIn: "10s"
+            expiresIn: "600s"
         }
     );
     return token;
 }
 
 const getID = (token) => {
+    const payload = jwt.verify(token, secretKey, (err, payload) => {
+        if(err){
+            return ''
+        } else {
+            return payload.id
+        }
+    });
+    return payload;
+}
+
+const getNome = (token) => {
     const payload = jwt.verify(token, secretKey);
-    return payload.id;
+    return payload.nome;
 }
 
 const autenticacao = (req, response) => {
-    console.log(req.body)
     if(req.body.token){
         const token = req.body.token;
         const jwtResponse = jwt.verify(token, secretKey, (err, payload) => {
             if(err){
                 response.status(401).send({message: "Token Invalido ou expirado! Faça login novamente."});
             } else {
-                console.log('payload => ', payload);
+                //console.log('payload => ', payload);
                 response.status(200).send({message: 'Usuario validado'})
             }
         });
@@ -42,4 +52,4 @@ const autenticacao = (req, response) => {
 }
 
 
-module.exports = { gerarToken, autenticacao, getID };
+module.exports = { gerarToken, autenticacao, getID, getNome };

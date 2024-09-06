@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import './TelaPropriedade.css';
+import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
+import PropriedadeItem from '../components/PropriedadeItem';
+import './TelaPropriedade.css';
 
 const TelaPropriedade = () => {
     const [propriedades, setPropriedades] = useState([]);
     const [propriedadeSelecionada, setPropriedadeSelecionada] = useState(null);
-    const usarDadosSimulados = true;  // Se colocar false teoricamente e pra pegar os daddos do bd
+    const [adicionarPropriedade, setAdicionarPropriedade] = useState(false);
+    const [novoNomePropriedade, setNovoNomePropriedade] = useState('');
+    const [localizacaoPropriedade, setLocalizacaoPropriedade] = useState('');
+    const [descricaoPropriedade, setDescricaoPropriedade] = useState('');
+    const navigate = useNavigate();
+
+    const usarDadosSimulados = true;
+
     useEffect(() => {
         if (usarDadosSimulados) {
             carregarDadosSimulados();
@@ -15,7 +23,6 @@ const TelaPropriedade = () => {
         }
     }, []);
 
-    // usei de exemplo
     const carregarDadosSimulados = () => {
         const dadosSimulados = [
             { id: 1, nome: 'Fazenda Boa Vista', localizacao: 'Alfenas, MG', areaTotal: 500, talhoes: [
@@ -30,36 +37,68 @@ const TelaPropriedade = () => {
         setPropriedades(dadosSimulados);
     };
 
-    // aqui é teoricamente funcionando com o back
     const carregarPropriedadesDoBackend = async () => {
         try {
             const response = await fetch('http://localhost:3000/propriedades'); 
+            const data = await response.json();
             setPropriedades(data);
         } catch (error) {
             console.error('Erro ao carregar propriedades:', error);
         }
     };
 
-    const handlePropriedadeClick = async (propriedadeId) => {
-        if (propriedadeSelecionada === propriedadeId) {
-            setPropriedadeSelecionada(null); 
-            if (usarDadosSimulados) {
-                // Encontre os talhões simulados
-                const propriedadeSelecionada = propriedades.find(p => p.id === propriedadeId);
-                setPropriedadeSelecionada(propriedadeId);
-            } else {
-                try {
-                    const response = await fetch(`http://localhost:3000/propriedades`); 
-                    const data = await response.json();
-                    const propriedadesAtualizadas = propriedades.map(propriedade => 
-                        propriedade.id === propriedadeId ? { ...propriedade, talhoes: data } : propriedade
-                    );
-                    setPropriedades(propriedadesAtualizadas);
-                    setPropriedadeSelecionada(propriedadeId); 
-                } catch (error) {
-                    console.error('Erro ao carregar talhões:', error);
-                }
+    const handlePropriedadeClick = (propriedadeId) => {
+        setPropriedadeSelecionada(propriedadeId === propriedadeSelecionada ? null : propriedadeId);
+    };
+
+    const handleAdicionarClick = (e) => {
+        e.stopPropagation(); 
+        setAdicionarPropriedade(true);
+    };
+
+    const handleFecharAdicionar = (e) => {
+        e.stopPropagation();
+        setAdicionarPropriedade(false);
+    };
+
+    const handleNomePropriedadeChange = (e) => {
+        setNovoNomePropriedade(e.target.value);
+    };
+
+    const handleLocalizacaoChange = (e) => {
+        setLocalizacaoPropriedade(e.target.value);
+    };
+
+    const handleDescricaoChange = (e) => {
+        setDescricaoPropriedade(e.target.value);
+    };
+
+    const handleAdicionarPropriedade = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/propriedades', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    nome: novoNomePropriedade, 
+                    localizacao: localizacaoPropriedade,
+                    descricao: descricaoPropriedade
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar a propriedade');
             }
+
+            // Reinicializa os campos e oculta o formulário de adicionar
+            setNovoNomePropriedade('');
+            setLocalizacaoPropriedade('');
+            setDescricaoPropriedade('');
+            setAdicionarPropriedade(false);
+            carregarPropriedadesDoBackend();
+        } catch (error) {
+            console.error('Erro ao enviar dados:', error);
         }
     };
 
@@ -70,38 +109,49 @@ const TelaPropriedade = () => {
                 <h1>Propriedades Cadastradas</h1>
                 <div className="propriedades-lista">
                     {propriedades.map(propriedade => (
-                        <div 
-                            key={propriedade.id} 
-                            className={`propriedade-item ${propriedade.id === propriedadeSelecionada ? 'expanded' : ''}`}
-                            onClick={() => handlePropriedadeClick(propriedade.id)}
-                        >
-                            <h3>{propriedade.nome}</h3>
-                            {propriedade.id === propriedadeSelecionada && (
-                                <div className="talhoes-detalhes">
-                                    <h4>Detalhes da Propriedade:</h4>
-                                    <p>Localização: {propriedade.localizacao}</p>
-                                    <p>Área Total: {propriedade.areaTotal} ha</p>
-                                    <h4>Talhões:</h4>
-                                    {propriedade.talhoes && propriedade.talhoes.length > 0 ? (
-                                        propriedade.talhoes.map(talhao => (
-                                            <Link 
-                                                to={`/mapapropriedade?talhaoId=${talhao.id}`}
-                                                key={talhao.id} 
-                                                className="talhao-item"
-                                            >
-                                                {talhao.nome} - Área: {talhao.area} ha
-                                            </Link>
-                                        ))
-                                    ) : (
-                                        <p>Nenhum talhão cadastrado para esta propriedade.</p>
-                                    )}
-                                </div>
-                            )}
-                            <div className="expand-icon">
-                                {propriedade.id === propriedadeSelecionada ? '-' : '+'}
-                            </div>
-                        </div>
+                        <PropriedadeItem
+                            key={propriedade.id}
+                            propriedade={propriedade}
+                            propriedadeSelecionada={propriedadeSelecionada}
+                            handlePropriedadeClick={handlePropriedadeClick}
+                        />
                     ))}
+                    {/* bloco para adicionar nova propriedade */}
+                    <div
+                        className={`propriedade-item add-propriedade ${adicionarPropriedade ? 'expanded' : ''}`}
+                        onClick={handleAdicionarClick}
+                    >
+                        {adicionarPropriedade ? (
+                            <div className="adicionar-propriedade-detalhes" onClick={(e) => e.stopPropagation()}>
+                                <button onClick={handleFecharAdicionar} className="fechar-adicionar">X</button>
+                                <input 
+                                    type="text" 
+                                    placeholder="Nome da Propriedade" 
+                                    value={novoNomePropriedade}
+                                    onChange={handleNomePropriedadeChange}
+                                    className="input-propriedade"
+                                />
+                                <input 
+                                    type="text" 
+                                    placeholder="Localização" 
+                                    value={localizacaoPropriedade}
+                                    onChange={handleLocalizacaoChange}
+                                    className="input-propriedade"
+                                />
+                                <textarea
+                                    placeholder="Descrição (opcional)"
+                                    value={descricaoPropriedade}
+                                    onChange={handleDescricaoChange}
+                                    className="input-descricao"
+                                />
+                                <button onClick={handleAdicionarPropriedade} className="botao-adicionar-propriedade">
+                                    Adicionar Propriedade
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="add-icon">+</div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
