@@ -193,9 +193,9 @@ const AddTalhaoPage = () => {
                                 <option value="" disabled>
                                     Selecione uma propriedade
                                 </option>
-                                {propriedadesCadastradas.map((cultura, index) => (
-                                    <option key={index} value={cultura}>
-                                        {cultura}
+                                {propriedadesCadastradas.map((propriedade, index) => (
+                                    <option key={index} value={propriedade}>
+                                        {propriedade}
                                     </option>
                                 ))}
                         </select>
