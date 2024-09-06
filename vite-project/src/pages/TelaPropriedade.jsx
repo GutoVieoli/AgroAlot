@@ -116,7 +116,7 @@ const TelaPropriedade = () => {
                             handlePropriedadeClick={handlePropriedadeClick}
                         />
                     ))}
-                    {/* Bloco para adicionar nova propriedade */}
+                    {/* bloco para adicionar nova propriedade */}
                     <div
                         className={`propriedade-item add-propriedade ${adicionarPropriedade ? 'expanded' : ''}`}
                         onClick={handleAdicionarClick}
