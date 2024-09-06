@@ -1,0 +1,61 @@
+.grafico-container {
+    width: 90%;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.informacoes-ndvi {
+    margin-bottom: 20px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.informacoes-ndvi p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.erro-mensagem {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.intervalo-datas {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    justify-content: flex-end; 
+}
+
+.intervalo-datas label {
+    font-size: 16px;
+    color: #333;
+}
+
+.intervalo-datas input {
+    margin-left: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.grafico-wrapper {
+    position: relative;
+    height: 400px; /* Altura do grafico */
+    width: 100%; /* largura do grafica */
+}
+
+canvas {
+    border-radius: 10px;  /* Bordas do grafico */
+}
