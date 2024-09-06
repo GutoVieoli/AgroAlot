@@ -4,14 +4,18 @@ import Topbar from '../components/Topbar';
 
 const AddTalhaoPage = () => {
     const [nome, setNome] = useState('');
-    const [propriedade, setPropriedade] = useState(''); 
-    const [cultura, setCultura] = useState(''); 
-    const [coordenadas, setCoordenadas] = useState(['', '', '']); 
+    const [propriedade, setPropriedade] = useState('');
+    const [cultura, setCultura] = useState('');
+    const [coordenadas, setCoordenadas] = useState(['', '', '']);
     const [modo, setModo] = useState('manual');
     const [erroMsg, setErroMsg] = useState('');
     const [sugestoes, setSugestoes] = useState([]);
     const [isFocused, setIsFocused] = useState(false);
-    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([])
+    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);
+    const [mostrarModal, setMostrarModal] = useState(false); // Controla a exibição do modal
+    const [novaPropriedadeNome, setNovaPropriedadeNome] = useState('');
+    const [novaPropriedadeLocalizacao, setNovaPropriedadeLocalizacao] = useState('');
+    const [novaPropriedadeDescricao, setNovaPropriedadeDescricao] = useState('');
 
     const culturas = [
         "Algodão",
@@ -26,8 +30,6 @@ const AddTalhaoPage = () => {
         "Trigo",
     ];
 
-
-    // Função para buscar as propriedades cadastradas da API assim que a página carregar
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
@@ -55,9 +57,7 @@ const AddTalhaoPage = () => {
         fetchPropriedades(); // Chama a função assim que o componente for montado
     }, []);
 
-
     const handlePropriedadeFocus = () => {
-        // Quando o campo de propriedade é focado, mostrar todas as propriedades cadastradas
         setSugestoes(propriedadesCadastradas);
         setIsFocused(true);
     };
@@ -74,7 +74,7 @@ const AddTalhaoPage = () => {
 
     const handleSugestaoClick = (sugestao) => {
         setPropriedade(sugestao);
-        setSugestoes([]); 
+        setSugestoes([]);
     };
 
     const handleAddCoordenada = () => {
@@ -126,7 +126,6 @@ const AddTalhaoPage = () => {
             return response.json();
         })
         .then(data => {
-            console.log('Talhão adicionado com sucesso:', data);
             setNome('');
             setPropriedade('');
             setCultura('');
@@ -140,47 +139,38 @@ const AddTalhaoPage = () => {
         });
     };
 
-    const handleSubmitArquivo = (e) => {
-        e.preventDefault();
+    const handleAddPropriedade = async () => {
+        // Função para enviar a nova propriedade ao backend
+        try {
+            const response = await fetch('http://localhost:3000/propriedades', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: novaPropriedadeNome,
+                    localizacao: novaPropriedadeLocalizacao,
+                    descricao: novaPropriedadeDescricao
+                })
+            });
 
-        const arquivo = e.target.arquivo.files[0];
-        const formData = new FormData();
-        formData.append('nome', nome);
-        formData.append('propriedade', propriedade);
-        formData.append('cultura', cultura);
-        formData.append('arquivo', arquivo);
-
-        fetch('http://localhost:3000/novo-talhao', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => {
             if (!response.ok) {
-                return response.json().then((error) => {
-                    setErroMsg(error.message);
-                    throw new Error(`Erro HTTP! status: ${response.status}, message: ${error.message}`);
-                });
+                throw new Error('Erro ao salvar a propriedade');
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Talhão adicionado com sucesso:', data);
-            setNome('');
-            setPropriedade('');
-            setCultura('');
-            setErroMsg(''); 
-            setSugestoes([]); 
-            setIsFocused(false); 
-        })
-        .catch((error) => {
-            console.error('Erro:', error);
-        });
+
+            // Fechar o modal após salvar
+            setMostrarModal(false);
+            setNovaPropriedadeNome('');
+            setNovaPropriedadeLocalizacao('');
+            setNovaPropriedadeDescricao('');
+        } catch (error) {
+            console.error('Erro ao adicionar propriedade:', error);
+        }
     };
 
     return (
         <div>
             <Topbar />
-
             <div className="add-talhao-container">
                 <h1>Adicionar Novo Talhão</h1>
                 <div className="modo-switch">
@@ -200,7 +190,6 @@ const AddTalhaoPage = () => {
 
                 {erroMsg && <p className="error-message">{erroMsg}</p>}
 
-                {/* {modo === 'manual' && ( */}
                 <form onSubmit={handleSubmitManual} className="add-talhao-form">
                     <div className="form-group">
                         <label htmlFor="propriedade">Propriedade</label>
@@ -209,8 +198,8 @@ const AddTalhaoPage = () => {
                             id="propriedade" 
                             value={propriedade} 
                             onChange={handlePropriedadeChange}
-                            onFocus={handlePropriedadeFocus}      // Mostrar sugestões quando o campo é focado
-                            onBlur={() => setTimeout(() => setIsFocused(false), 100)} // Fecha as sugestões ao perder o foco
+                            onFocus={handlePropriedadeFocus}
+                            onBlur={() => setTimeout(() => setIsFocused(false), 100)}
                             required 
                         />
                         {isFocused && sugestoes.length > 0 && (
@@ -222,7 +211,58 @@ const AddTalhaoPage = () => {
                                 ))}
                             </ul>
                         )}
+                        <div className="add-propriedade-section">
+                            <span>Não encontrou a propriedade?</span>
+                            <button type="button" className="add-propriedade-btn" onClick={() => setMostrarModal(true)}>
+                                Adicionar nova propriedade
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Modal de Adicionar Propriedade */}
+                    {mostrarModal && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <h2>Adicionar Propriedade</h2>
+                                <div className="modal-form-group">
+                                    <label htmlFor="novaPropriedadeNome">Nome</label>
+                                    <input
+                                        type="text"
+                                        id="novaPropriedadeNome"
+                                        value={novaPropriedadeNome}
+                                        onChange={(e) => setNovaPropriedadeNome(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="modal-form-group">
+                                    <label htmlFor="novaPropriedadeLocalizacao">Localização</label>
+                                    <input
+                                        type="text"
+                                        id="novaPropriedadeLocalizacao"
+                                        value={novaPropriedadeLocalizacao}
+                                        onChange={(e) => setNovaPropriedadeLocalizacao(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div className="modal-form-group">
+                                    <label htmlFor="novaPropriedadeDescricao">Descrição (opcional)</label>
+                                    <textarea
+                                        id="novaPropriedadeDescricao"
+                                        value={novaPropriedadeDescricao}
+                                        onChange={(e) => setNovaPropriedadeDescricao(e.target.value)}
+                                    />
+                                </div>
+                                <button className="submit-btn" onClick={handleAddPropriedade}>
+                                    Adicionar Propriedade
+                                </button>
+                                <button className="close-btn" onClick={() => setMostrarModal(false)}>
+                                    Fechar
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Formulário de adição de talhão */}
                     <div className="form-group">
                         <label htmlFor="nome">Nome do Talhão</label>
                         <input 

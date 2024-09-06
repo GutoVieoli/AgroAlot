@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedadeClick }) => {
     return (
-        <div 
+        <div
             className={`propriedade-item ${propriedade.id === propriedadeSelecionada ? 'expanded' : ''}`}
             onClick={() => handlePropriedadeClick(propriedade.id)}
         >
@@ -18,7 +18,7 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                         propriedade.talhoes.map(talhao => (
                             <Link 
                                 to={`/mapapropriedade?talhaoId=${talhao.id}`}
-                                key={talhao.id} 
+                                key={talhao.id}
                                 className="talhao-item"
                             >
                                 {talhao.nome} - Área: {talhao.area} ha
