@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
 import PropriedadeItem from '../components/PropriedadeItem';
 import './TelaPropriedade.css';
@@ -9,6 +9,8 @@ const TelaPropriedade = () => {
     const [propriedadeSelecionada, setPropriedadeSelecionada] = useState(null);
     const [adicionarPropriedade, setAdicionarPropriedade] = useState(false);
     const [novoNomePropriedade, setNovoNomePropriedade] = useState('');
+    const [localizacaoPropriedade, setLocalizacaoPropriedade] = useState('');
+    const [descricaoPropriedade, setDescricaoPropriedade] = useState('');
     const navigate = useNavigate();
 
     const usarDadosSimulados = true;
@@ -49,39 +51,52 @@ const TelaPropriedade = () => {
         setPropriedadeSelecionada(propriedadeId === propriedadeSelecionada ? null : propriedadeId);
     };
 
-    // Expande o bloco de adicionar propriedade
     const handleAdicionarClick = (e) => {
-        e.stopPropagation();  // Evita fechamento ao clicar no campo
+        e.stopPropagation(); 
         setAdicionarPropriedade(true);
     };
 
-    // Fecha o bloco de adicionar propriedade
     const handleFecharAdicionar = (e) => {
         e.stopPropagation();
         setAdicionarPropriedade(false);
     };
 
-    // Controla a entrada do nome da propriedade
     const handleNomePropriedadeChange = (e) => {
         setNovoNomePropriedade(e.target.value);
     };
 
-    // Envia os dados da nova propriedade para o backend e navega para a página de adicionar talhão
-    const handleIrParaTalhao = async () => {
+    const handleLocalizacaoChange = (e) => {
+        setLocalizacaoPropriedade(e.target.value);
+    };
+
+    const handleDescricaoChange = (e) => {
+        setDescricaoPropriedade(e.target.value);
+    };
+
+    const handleAdicionarPropriedade = async () => {
         try {
             const response = await fetch('http://localhost:3000/propriedades', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ nome: novoNomePropriedade }),
+                body: JSON.stringify({ 
+                    nome: novoNomePropriedade, 
+                    localizacao: localizacaoPropriedade,
+                    descricao: descricaoPropriedade
+                }),
             });
 
             if (!response.ok) {
                 throw new Error('Erro ao salvar a propriedade');
             }
 
-            navigate('/add-talhao');
+            // Reinicializa os campos e oculta o formulário de adicionar
+            setNovoNomePropriedade('');
+            setLocalizacaoPropriedade('');
+            setDescricaoPropriedade('');
+            setAdicionarPropriedade(false);
+            carregarPropriedadesDoBackend();
         } catch (error) {
             console.error('Erro ao enviar dados:', error);
         }
@@ -116,8 +131,21 @@ const TelaPropriedade = () => {
                                     onChange={handleNomePropriedadeChange}
                                     className="input-propriedade"
                                 />
-                                <button onClick={handleIrParaTalhao} className="botao-ir-talhao">
-                                    Adicionar Talhão
+                                <input 
+                                    type="text" 
+                                    placeholder="Localização" 
+                                    value={localizacaoPropriedade}
+                                    onChange={handleLocalizacaoChange}
+                                    className="input-propriedade"
+                                />
+                                <textarea
+                                    placeholder="Descrição (opcional)"
+                                    value={descricaoPropriedade}
+                                    onChange={handleDescricaoChange}
+                                    className="input-descricao"
+                                />
+                                <button onClick={handleAdicionarPropriedade} className="botao-adicionar-propriedade">
+                                    Adicionar Propriedade
                                 </button>
                             </div>
                         ) : (

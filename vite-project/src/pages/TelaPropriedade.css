@@ -10,6 +10,32 @@
     gap: 30px;
 }
 
+/* Estilo dos nomes das propriedades */
+.propriedade-item h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px; /* Ajuste no tamanho da fonte */
+    color: #333;
+    font-weight: 600;
+    letter-spacing: 1.2px; /* Espaçamento entre letras */
+    text-transform: capitalize; /* Primeira letra de cada palavra em maiúscula */
+}
+
+
+/* Estilo do título "Propriedades Cadastradas" */
+.tela-propriedade-container h1 {
+    font-size: 32px; /* Tamanho da fonte */
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700; /* Peso maior na fonte */
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    letter-spacing: 1.5px; /* Espaçamento entre letras */
+    text-transform: uppercase; /* Tudo em maiúsculas para destaque */
+}
+
+/* Estilo para as caixas de propriedade */
 .propriedade-item {
     position: relative;
     padding: 30px;
@@ -19,12 +45,11 @@
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Ajusta para centralizar o conteúdo */
+    justify-content: center;
     align-items: center;
     min-height: 250px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
-
 
 .propriedade-item.expanded {
     background-color: #e0e0e0;
@@ -32,45 +57,16 @@
     grid-column: span 2;
 }
 
-.adicionar-propriedade-detalhes {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding-top: 40px; /* Ajusta o padding para que o conteúdo não sobreponha o "X" */
-}
-
-.adicionar-propriedade-detalhes input {
-    width: 90%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-}
 .expand-icon {
     position: absolute;
-    top: 10px; /* Posição superior do botão */
-    right: 10px; /* Posição direita do botão */
+    top: 10px;
+    right: 10px;
     font-size: 24px;
     color: #555;
     cursor: pointer;
 }
 
-.botao-ir-talhao {
-    background-color: #5F6F52;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.botao-ir-talhao:hover {
-    background-color: #4a5a40;
-}
-
+/* Estilo específico para a caixa de adicionar propriedade */
 .add-propriedade {
     background-color: #e0e0e0;
     border: 2px dashed #b0b0b0;
@@ -83,31 +79,61 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
     min-height: 250px;
     text-decoration: none;
-    position: relative; /* Importante para posicionar o ícone corretamente */
+    position: relative;
 }
 
 .add-propriedade.expanded {
-    min-height: 350px;
-    justify-content: flex-start; /* Garante que o conteúdo fique no topo */
+    min-height: 400px;
+    justify-content: flex-start;
 }
 
-.add-propriedade:hover {
-    background-color: #d0d0d0; 
-    border-color: #5c5c5c;
+/* Estilo para o conteúdo da caixa de adicionar propriedade */
+.adicionar-propriedade-detalhes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 40px;
 }
 
-/* Posicionamento do botão "+" */
+.adicionar-propriedade-detalhes input, .adicionar-propriedade-detalhes textarea {
+    width: 90%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.input-descricao {
+    height: 80px; /* Tamanho da caixa de texto */
+}
+
+.botao-adicionar-propriedade {
+    background-color: #5F6F52;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao-adicionar-propriedade:hover {
+    background-color: #4a5a40;
+}
+
+/* Posicionamento do "+" no centro da caixa de adicionar propriedade */
 .add-icon {
     font-size: 48px;
     color: #5F6F52;
-    text-decoration: none;
-    position: center; /* Garante que o ícone não se mova com o conteúdo */
-    top: 10px; /* Posicionado no canto superior direito */
-    right: 10px; /* Ajusta para o canto da box de adicionar */
-    transform: translate(0, 0);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-/* Botão de fechar o bloco de adicionar propriedade */
+/* Botão de fechar "X" */
 .fechar-adicionar {
     position: absolute;
     top: 10px;
@@ -123,8 +149,7 @@
     color: #5F6F52;
 }
 
-
-
+/* Estilo para o talhão */
 .talhoes-detalhes {
     width: 100%;
     padding: 15px;
@@ -142,10 +167,10 @@
     margin-bottom: 10px;
     color: #333;
     transition: background-color 0.3s ease;
-    width: 90%; /* Garante que o talhão ocupe a largura disponível */
+    width: 90%;
     display: flex;
-    justify-content: space-between; /* Espaça o conteúdo */
-    align-items: center; /* Alinha o conteúdo verticalmente */
+    justify-content: space-between;
+    align-items: center;
 }
 
 .talhao-item:hover {
