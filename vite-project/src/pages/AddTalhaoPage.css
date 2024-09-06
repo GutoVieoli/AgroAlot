@@ -38,7 +38,7 @@
 }
 
 .modo-switch button.active {
-    border-color: #34a853;
+    border-color: #4a5a40;
     background-color: #e6e6e6;
     font-weight: bold;
 }
@@ -80,7 +80,7 @@
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #34a853;
+    border-color: #4a5a40;
     outline: none;
 }
 
@@ -130,23 +130,11 @@
 }
 
 .add-coordenada-btn:hover {
-    background-color: #34a853;
+    background-color: #4a5a40;
 }
 
-.submit-btn {
-    background-color: #34a853;
-    color: white;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
 
-.submit-btn:hover {
-    background-color: #2c8e44;
-}
+
 
 .submit-btn:disabled {
     background-color: #ccc;
@@ -171,4 +159,149 @@
 
 .suggestions-list li:hover {
     background-color: #f0f0f0;
+}
+
+
+.add-propriedade-section {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-propriedade-btn {
+    background-color: #5F6F52;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+}
+
+.add-propriedade-btn:hover {
+    background-color: #4a5a40;
+}
+
+.add-propriedade-section span {
+    font-size: 13px;
+    color: #555;
+}
+
+.add-propriedade-section {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-propriedade-btn {
+    background-color: #5F6F52;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+}
+
+.add-propriedade-btn:hover {
+    background-color: #4a5a40;
+}
+
+.add-propriedade-section span {
+    font-size: 13px;
+    color: #555;
+}
+
+
+
+
+
+
+.modal h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #333;
+}
+
+.modal-form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.modal-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+
+
+
+
+.submit-btn {
+    background-color: #4a5a40; /* Cor do botão */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #3a4a30; /* Cor ao passar o mouse */
+}
+
+/* Modal overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal box */
+.modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Tamanho ajustado dos inputs no modal */
+.modal-form-group input,
+.modal-form-group textarea {
+    width: 95%; /* Ajustado para evitar vazamento */
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Botão de fechar o modal */
+.close-btn {
+    background-color: #ccc;
+    color: #444;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: #aaa;
 }
