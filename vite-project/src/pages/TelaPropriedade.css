@@ -83,7 +83,7 @@
 }
 
 .add-propriedade.expanded {
-    min-height: 400px;
+    min-height: 250px;
     justify-content: flex-start;
 }
 
@@ -140,7 +140,8 @@
     right: 10px;
     background-color: transparent;
     border: none;
-    font-size: 18px;
+    font-size: 22px;
+    color: rgb(126, 0, 0);
     font-weight: bold;
     cursor: pointer;
 }

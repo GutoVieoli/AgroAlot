@@ -22,16 +22,18 @@ const procuraPropriedade = async (nome) => {
 
 const cadastrarPropriedade = async (requisicao, resposta) => {
     const nome = capitalizeWords(requisicao.body.nome);
-    const descricao = requisicao.body.desc
+    const tokenJWT = requisicao.body.tokenJWT
+    const localizacao = requisicao.body.localizacao
+
     
-    if(nome){
+    if(nome && tokenJWT && localizacao){
         const existePropriedade = await procuraPropriedade(nome)
 
         if( !existePropriedade){
-            const id_usuario = getID(requisicao.body.jwt)
+            const id_usuario = getID(tokenJWT)
 
             await propriedades.create({
-                nome, descricao, id_usuario
+                nome, localizacao, id_usuario
             }).then( () => {
                 resposta.status(201).send({
                     message: 'Propriedade criada com sucesso!'
@@ -54,7 +56,7 @@ const listarPropriedades = async (requisicao, resposta) => {
     const id_usuario = getID(tokenJWT)
 
     await propriedades.findAll( {
-        attributes: ['nome', 'descricao'],
+        attributes: ['nome', 'localizacao'],
         where: { id_usuario }
     } ).then( (propriedadesSalvas) => {
         resposta.status(201).send({
