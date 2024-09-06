@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
 CREATE TABLE IF NOT EXISTS propriedades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
+    localizacao VARCHAR(100) NOT NULL,
+    area_total DECIMAL(10, 2),
     id_usuario VARCHAR(64) NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );

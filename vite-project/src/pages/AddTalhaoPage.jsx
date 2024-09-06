@@ -58,15 +58,6 @@ const AddTalhaoPage = () => {
     }, []);
 
 
-    const handlePropriedadeChange = (e) => {
-        const valor = e.target.value;
-        setPropriedade(valor);
-
-        const novasSugestoes = propriedadesCadastradas.filter(propriedade => 
-            propriedade.toLowerCase().startsWith(valor.toLowerCase())
-        );
-    };
-
     const handleAddCoordenada = () => {
         setCoordenadas([...coordenadas, '']);
     };
@@ -187,7 +178,6 @@ const AddTalhaoPage = () => {
                             type="text" 
                             id="propriedade" 
                             value={propriedade} 
-                            onChange={handlePropriedadeChange}
                             required 
                         >
                                 <option value="" disabled>
