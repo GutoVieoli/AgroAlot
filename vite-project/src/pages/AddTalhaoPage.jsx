@@ -3,14 +3,13 @@ import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
 const AddTalhaoPage = () => {
-    const [nome, setNome] = useState('');
+    const [nomeTalhao, setNomeTalhao] = useState('');
     const [propriedade, setPropriedade] = useState('');
     const [cultura, setCultura] = useState('');
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
     const [modo, setModo] = useState('manual');
     const [erroMsg, setErroMsg] = useState('');
-    const [sugestoes, setSugestoes] = useState([]);
-    const [isFocused, setIsFocused] = useState(false);
+
     const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);
     const [mostrarModal, setMostrarModal] = useState(false); // Controla a exibição do modal
     const [novaPropriedadeNome, setNovaPropriedadeNome] = useState('');
@@ -20,8 +19,9 @@ const AddTalhaoPage = () => {
     const culturas = [
         "Algodão",
         "Arroz",
+        "Batata",
         "Café",
-        "Cana-de-Açúcar",
+        "Cana de Açúcar",
         "Feijão",
         "Milho",
         "Pasto", 
@@ -57,10 +57,6 @@ const AddTalhaoPage = () => {
         fetchPropriedades(); // Chama a função assim que o componente for montado
     }, []);
 
-    const handlePropriedadeFocus = () => {
-        setSugestoes(propriedadesCadastradas);
-        setIsFocused(true);
-    };
 
     const handlePropriedadeChange = (e) => {
         const valor = e.target.value;
@@ -69,12 +65,6 @@ const AddTalhaoPage = () => {
         const novasSugestoes = propriedadesCadastradas.filter(propriedade => 
             propriedade.toLowerCase().startsWith(valor.toLowerCase())
         );
-        setSugestoes(novasSugestoes);
-    };
-
-    const handleSugestaoClick = (sugestao) => {
-        setPropriedade(sugestao);
-        setSugestoes([]);
     };
 
     const handleAddCoordenada = () => {
@@ -126,13 +116,11 @@ const AddTalhaoPage = () => {
             return response.json();
         })
         .then(data => {
-            setNome('');
+            setNomeTalhao('');
             setPropriedade('');
             setCultura('');
             setCoordenadas(['', '', '']);
             setErroMsg(''); 
-            setSugestoes([]); 
-            setIsFocused(false);
         })
         .catch((error) => {
             console.error('Erro:', error);
@@ -191,33 +179,102 @@ const AddTalhaoPage = () => {
                 {erroMsg && <p className="error-message">{erroMsg}</p>}
 
                 <form onSubmit={handleSubmitManual} className="add-talhao-form">
+
                     <div className="form-group">
+
                         <label htmlFor="propriedade">Propriedade</label>
-                        <input 
+                        <select 
                             type="text" 
                             id="propriedade" 
                             value={propriedade} 
                             onChange={handlePropriedadeChange}
-                            onFocus={handlePropriedadeFocus}
-                            onBlur={() => setTimeout(() => setIsFocused(false), 100)}
                             required 
-                        />
-                        {isFocused && sugestoes.length > 0 && (
-                            <ul className="suggestions-list">
-                                {sugestoes.map((sugestao, index) => (
-                                    <li key={index} onClick={() => handleSugestaoClick(sugestao)}>
-                                        {sugestao}
-                                    </li>
+                        >
+                                <option value="" disabled>
+                                    Selecione uma propriedade
+                                </option>
+                                {propriedadesCadastradas.map((propriedade, index) => (
+                                    <option key={index} value={propriedade}>
+                                        {propriedade}
+                                    </option>
                                 ))}
-                            </ul>
-                        )}
+                        </select>
+
                         <div className="add-propriedade-section">
                             <span>Não encontrou a propriedade?</span>
                             <button type="button" className="add-propriedade-btn" onClick={() => setMostrarModal(true)}>
                                 Adicionar nova propriedade
                             </button>
                         </div>
+
                     </div>
+
+                    <div className="form-group">
+                        <label htmlFor="nome">Nome do Talhão</label>
+                        <input 
+                            type="text" 
+                            id="nome" 
+                            value={nomeTalhao} 
+                            onChange={(e) => setNomeTalhao(e.target.value)} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="cultura">Cultura</label>
+                        <select 
+                            id="cultura" 
+                            value={cultura} 
+                            onChange={(e) => setCultura(e.target.value)} 
+                            required
+                        >
+                            <option value="" disabled>
+                                Selecione uma cultura
+                            </option>
+                            {culturas.map((cultura, index) => (
+                                <option key={index} value={cultura}>
+                                    {cultura}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {modo === 'manual' && (
+                        <div className="form-group coordenadas-group">
+                            <label>Coordenadas</label>
+                            {coordenadas.map((coord, index) => (
+                                <div key={index} className="coordenada-item">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ex: 45.1234, -73.5678" 
+                                        value={coord}
+                                        onChange={(e) => handleCoordenadaChange(index, e.target.value)}
+                                        required
+                                    />
+                                    {coordenadas.length > 3 && (
+                                        <button 
+                                            type="button" 
+                                            className="remove-coordenada-btn" 
+                                            onClick={() => handleRemoveCoordenada(index)}
+                                        >
+                                            X
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            <button type="button" className="add-coordenada-btn" onClick={handleAddCoordenada}>
+                                + Adicionar Coordenada
+                            </button>
+                        </div>
+                    )}
+
+                    {modo === 'arquivo' && (
+                        <div className="form-group">
+                            <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
+                            <input type="file" id="arquivo" accept=".json,.geojson" required />
+                        </div>
+                    )}
+                    <button type="submit" className="submit-btn">Adicionar Talhão</button>
+
 
                     {/* Modal de Adicionar Propriedade */}
                     {mostrarModal && (
@@ -262,68 +319,6 @@ const AddTalhaoPage = () => {
                         </div>
                     )}
 
-                    {/* Formulário de adição de talhão */}
-                    <div className="form-group">
-                        <label htmlFor="nome">Nome do Talhão</label>
-                        <input 
-                            type="text" 
-                            id="nome" 
-                            value={nome} 
-                            onChange={(e) => setNome(e.target.value)} 
-                            required 
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="cultura">Cultura</label>
-                        <select 
-                            id="cultura" 
-                            value={cultura} 
-                            onChange={(e) => setCultura(e.target.value)} 
-                            required
-                        >
-                            <option value="">Selecione uma cultura</option>
-                            {culturas.map((cultura, index) => (
-                                <option key={index} value={cultura}>{cultura}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {modo === 'manual' && (
-                        <div className="form-group coordenadas-group">
-                            <label>Coordenadas</label>
-                            {coordenadas.map((coord, index) => (
-                                <div key={index} className="coordenada-item">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Ex: 45.1234, -73.5678" 
-                                        value={coord}
-                                        onChange={(e) => handleCoordenadaChange(index, e.target.value)}
-                                        required
-                                    />
-                                    {coordenadas.length > 3 && (
-                                        <button 
-                                            type="button" 
-                                            className="remove-coordenada-btn" 
-                                            onClick={() => handleRemoveCoordenada(index)}
-                                        >
-                                            ×
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                            <button type="button" className="add-coordenada-btn" onClick={handleAddCoordenada}>
-                                + Adicionar Coordenada
-                            </button>
-                        </div>
-                    )}
-
-                    {modo === 'arquivo' && (
-                        <div className="form-group">
-                            <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
-                            <input type="file" id="arquivo" accept=".json,.geojson" required />
-                        </div>
-                    )}
-                    <button type="submit" className="submit-btn">Adicionar Talhão</button>
                 </form>
             </div>
         </div>
