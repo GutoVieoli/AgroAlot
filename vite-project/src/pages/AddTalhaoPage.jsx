@@ -33,13 +33,13 @@ const AddTalhaoPage = () => {
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
-                const token = localStorage.getItem('tokenJWT');
+                const tokenJWT = localStorage.getItem('tokenJWT');
                 const response = await fetch('http://localhost:3000/propriedades/listar', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ jwt: token })
+                    body: JSON.stringify({ tokenJWT })
                 });
                 if (!response.ok) {
                     throw new Error('Erro ao buscar propriedades cadastradas.');

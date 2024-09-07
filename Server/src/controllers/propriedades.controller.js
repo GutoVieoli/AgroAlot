@@ -52,11 +52,11 @@ const cadastrarPropriedade = async (requisicao, resposta) => {
 }
 
 const listarPropriedades = async (requisicao, resposta) => {
-    const tokenJWT = requisicao.body.jwt
+    const tokenJWT = requisicao.body.tokenJWT
     const id_usuario = getID(tokenJWT)
 
     await propriedades.findAll( {
-        attributes: ['nome', 'localizacao'],
+        attributes: ['id', 'nome', 'localizacao', 'area_total'],
         where: { id_usuario }
     } ).then( (propriedadesSalvas) => {
         resposta.status(201).send({
