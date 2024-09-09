@@ -12,7 +12,7 @@ const TelaPropriedade = () => {
     const [localizacaoPropriedade, setLocalizacaoPropriedade] = useState('');
     const navigate = useNavigate();
 
-    const usarDadosSimulados = true;
+    const usarDadosSimulados = false;
 
     useEffect(() => {
         if (usarDadosSimulados) {
@@ -38,9 +38,37 @@ const TelaPropriedade = () => {
 
     const carregarPropriedadesDoBackend = async () => {
         try {
-            const response = await fetch('http://localhost:3000/propriedades/'); 
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/listar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    tokenJWT
+                }),
+            });
             const data = await response.json();
-            setPropriedades(data);
+            const propriedadesSalvas = data.propriedades;
+
+            // Transforma os dados recebidos no formato desejado
+            const propriedadesTransformadas = propriedadesSalvas.map((propriedade, index) => {
+                return {
+                    id: propriedade.id,
+                    nome: propriedade.nome,
+                    localizacao: propriedade.localizacao,
+                    areaTotal: propriedade.area_total,
+                    talhoes: [
+                        { id: 1, nome: `Talhão ${index + 1}`, area: 15 },
+                        { id: 2, nome: `Talhão ${index + 2}`, area: 20 }
+                    ]
+                };
+            });
+    
+            console.log(propriedadesTransformadas); // Exibe as propriedades transformadas no formato correto
+            setPropriedades(propriedadesTransformadas);
+            return propriedadesTransformadas; // Retorna o objeto transformado
+
         } catch (error) {
             console.error('Erro ao carregar propriedades:', error);
         }

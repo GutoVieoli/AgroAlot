@@ -3,18 +3,18 @@ import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
 const AddTalhaoPage = () => {
-    const [nomeTalhao, setNomeTalhao] = useState('');
     const [propriedade, setPropriedade] = useState('');
+    const [nomeTalhao, setNomeTalhao] = useState('');
     const [cultura, setCultura] = useState('');
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
     const [modo, setModo] = useState('manual');
     const [erroMsg, setErroMsg] = useState('');
 
-    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);
+    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);  // Prpriedades para a escolha
+    const [recarregarPropriedades, setRecarregarPropriedades] = useState(false); // Estado para controle de recarga
     const [mostrarModal, setMostrarModal] = useState(false); // Controla a exibição do modal
     const [novaPropriedadeNome, setNovaPropriedadeNome] = useState('');
     const [novaPropriedadeLocalizacao, setNovaPropriedadeLocalizacao] = useState('');
-    const [novaPropriedadeDescricao, setNovaPropriedadeDescricao] = useState('');
 
     const culturas = [
         "Algodão",
@@ -33,13 +33,13 @@ const AddTalhaoPage = () => {
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
-                const token = localStorage.getItem('tokenJWT');
+                const tokenJWT = localStorage.getItem('tokenJWT');
                 const response = await fetch('http://localhost:3000/propriedades/listar', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ jwt: token })
+                    body: JSON.stringify({ tokenJWT })
                 });
                 if (!response.ok) {
                     throw new Error('Erro ao buscar propriedades cadastradas.');
@@ -55,7 +55,7 @@ const AddTalhaoPage = () => {
         };
 
         fetchPropriedades(); // Chama a função assim que o componente for montado
-    }, []);
+    }, [recarregarPropriedades]);
 
 
     const handleAddCoordenada = () => {
@@ -121,7 +121,8 @@ const AddTalhaoPage = () => {
     const handleAddPropriedade = async () => {
         // Função para enviar a nova propriedade ao backend
         try {
-            const response = await fetch('http://localhost:3000/propriedades', {
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/criar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -129,12 +130,16 @@ const AddTalhaoPage = () => {
                 body: JSON.stringify({
                     nome: novaPropriedadeNome,
                     localizacao: novaPropriedadeLocalizacao,
-                    descricao: novaPropriedadeDescricao
+                    tokenJWT
                 })
             });
 
             if (!response.ok) {
+                setErroMsg('Erro ao salvar a propriedade...')
                 throw new Error('Erro ao salvar a propriedade');
+            } else {
+                setErroMsg('Propriedade Salva com sucesso!')
+                setRecarregarPropriedades(prev => !prev); // Alterna o estado, causando a recarga das propriedades salvas
             }
 
             // Fechar o modal após salvar
@@ -177,6 +182,7 @@ const AddTalhaoPage = () => {
                         <select 
                             type="text" 
                             id="propriedade" 
+                            onChange={ (e) => setPropriedade(e.target.value)}
                             value={propriedade} 
                             required 
                         >
@@ -265,51 +271,42 @@ const AddTalhaoPage = () => {
                     )}
                     <button type="submit" className="submit-btn">Adicionar Talhão</button>
 
-
-                    {/* Modal de Adicionar Propriedade */}
-                    {mostrarModal && (
-                        <div className="modal-overlay">
-                            <div className="modal">
-                                <h2>Adicionar Propriedade</h2>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeNome">Nome</label>
-                                    <input
-                                        type="text"
-                                        id="novaPropriedadeNome"
-                                        value={novaPropriedadeNome}
-                                        onChange={(e) => setNovaPropriedadeNome(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeLocalizacao">Localização</label>
-                                    <input
-                                        type="text"
-                                        id="novaPropriedadeLocalizacao"
-                                        value={novaPropriedadeLocalizacao}
-                                        onChange={(e) => setNovaPropriedadeLocalizacao(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeDescricao">Descrição (opcional)</label>
-                                    <textarea
-                                        id="novaPropriedadeDescricao"
-                                        value={novaPropriedadeDescricao}
-                                        onChange={(e) => setNovaPropriedadeDescricao(e.target.value)}
-                                    />
-                                </div>
-                                <button className="submit-btn" onClick={handleAddPropriedade}>
-                                    Adicionar Propriedade
-                                </button>
-                                <button className="close-btn" onClick={() => setMostrarModal(false)}>
-                                    Fechar
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                 </form>
+
+                {/* Modal de Adicionar Propriedade */}
+                {mostrarModal && (
+                    <form className="modal-overlay" onSubmit={(e) => { e.preventDefault(); handleAddPropriedade(); } }>
+                        <div className="modal">
+                            <h2>Adicionar Propriedade</h2>
+                            <div className="modal-form-group">
+                                <label htmlFor="novaPropriedadeNome">Nome</label>
+                                <input
+                                    type="text"
+                                    id="novaPropriedadeNome"
+                                    value={novaPropriedadeNome}
+                                    onChange={(e) => setNovaPropriedadeNome(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="modal-form-group">
+                                <label htmlFor="novaPropriedadeLocalizacao">Localização</label>
+                                <input
+                                    type="text"
+                                    id="novaPropriedadeLocalizacao"
+                                    value={novaPropriedadeLocalizacao}
+                                    onChange={(e) => setNovaPropriedadeLocalizacao(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button className="submit-btn" type='submit'>
+                                Adicionar Propriedade
+                            </button>
+                            <button className="close-btn" type='button' onClick={() =>  setMostrarModal(false) }>
+                                Fechar
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
         </div>
     );
