@@ -90,6 +90,8 @@ const AddTalhaoPage = () => {
             };
         }
         else if(modo === 'arquivo'){
+            formData.append('tokenJWT', tokenJWT)
+            formData.append('modo', modo);
             formData.append('arquivo', arquivo); // Adiciona o arquivo
             formData.append('nome', nomeTalhao); // Adiciona o nome do talhão
             formData.append('propriedade', propriedade); // Adiciona a propriedade
