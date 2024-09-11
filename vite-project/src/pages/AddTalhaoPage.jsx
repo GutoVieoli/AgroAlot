@@ -7,6 +7,7 @@ const AddTalhaoPage = () => {
     const [nomeTalhao, setNomeTalhao] = useState('');
     const [cultura, setCultura] = useState('');
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
+    const [arquivo, setArquivo] = useState(null);
     const [modo, setModo] = useState('manual');
     const [erroMsg, setErroMsg] = useState('');
 
@@ -75,48 +76,59 @@ const AddTalhaoPage = () => {
         }
     };
 
-    const handleSubmitManual = (e) => {
+    const handleSubmitManual = async (e) => {
         e.preventDefault();
-
-        if (coordenadas.length < 3) {
-            setErroMsg("Você precisa adicionar pelo menos 3 pontos de coordenadas.");
-            return;
+        const tokenJWT = localStorage.getItem('tokenJWT');
+        const formData = new FormData();
+        
+        if(modo === 'manual'){
+            const formData = {
+                nome: nomeTalhao,
+                propriedade,
+                cultura,
+                coordenadas,
+            };
+        }
+        else if(modo === 'arquivo'){
+            formData.append('arquivo', arquivo); // Adiciona o arquivo
+            formData.append('nome', nomeTalhao); // Adiciona o nome do talhão
+            formData.append('propriedade', propriedade); // Adiciona a propriedade
+            formData.append('cultura', cultura); // Adiciona a cultura
         }
 
-        const dados = {
-            nome,
-            propriedade,
-            cultura,
-            coordenadas,
-        };
-
-        fetch('http://localhost:3000/novo-talhao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dados),
-        })
-        .then(response => {
+        try {
+            // Enviando a requisição para o servidor
+            const response = await fetch('http://localhost:3000/talhoes/cadastrar', {
+                method: 'POST',
+                headers: {
+                    // Não precisa definir 'Content-Type', o navegador faz isso automaticamente para FormData
+                    'Authorization': `Bearer ${tokenJWT}` // Passando o token no header
+                },
+                body: formData // O body é o FormData contendo o arquivo e os dados
+            });
+    
             if (!response.ok) {
-                return response.json().then((error) => {
-                    setErroMsg(error.message);
-                    throw new Error(`Erro HTTP! status: ${response.status}, message: ${error.message}`);
-                });
+                const error = await response.json();
+                console.error('Erro no servidor:', error);
+                setErroMsg(error.message);
+                return;
             }
-            return response.json();
-        })
-        .then(data => {
+    
+            const data = await response.json();
+            console.log('Resposta do servidor:', data);
+    
+            // Limpar os campos após o sucesso
             setNomeTalhao('');
             setPropriedade('');
             setCultura('');
-            setCoordenadas(['', '', '']);
-            setErroMsg(''); 
-        })
-        .catch((error) => {
-            console.error('Erro:', error);
-        });
+            setArquivo(null); // Limpa o arquivo do estado
+            setErroMsg(''); // Limpar mensagem de erro
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            setErroMsg('Erro ao adicionar o talhão.');
+        }
     };
+
 
     const handleAddPropriedade = async () => {
         // Função para enviar a nova propriedade ao backend
@@ -266,7 +278,8 @@ const AddTalhaoPage = () => {
                     {modo === 'arquivo' && (
                         <div className="form-group">
                             <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
-                            <input type="file" id="arquivo" accept=".json,.geojson" required />
+                            <input type="file" id="arquivo" accept=".json,.geojson" 
+                                onChange={ (e) => setArquivo(e.target.files[0])} required />
                         </div>
                     )}
                     <button type="submit" className="submit-btn">Adicionar Talhão</button>
