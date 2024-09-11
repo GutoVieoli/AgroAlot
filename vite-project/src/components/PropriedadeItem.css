@@ -1,16 +1,16 @@
-/* Estilo para o ícone de lápis no nome e localização da propriedade */
+/* lapisinho */
 .edit-icon-property {
     position: absolute;
-    top: 10px;   /* Posiciona o ícone no canto superior */
-    right: 40px; /* Posiciona o ícone no canto direito */
-    font-size: 20px;  /* Tamanho do ícone */
+    top: 10px;   
+    right: 40px; 
+    font-size: 20px;  
     cursor: pointer;
     color: gray;
     transition: color 0.3s ease;
 }
 
 .edit-icon-property:hover {
-    color: #5F6F52; /* Cor ao passar o mouse */
+    color: #5F6F52; 
 }
 
 /* Estilo geral */
@@ -89,26 +89,26 @@
     width: 90%;
 }
 
-/* Estilo para o formulário de edição */
+/* form de edicao */
 .edit-property-form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espaçamento entre os campos */
-    width: 100%; /* Para ocupar toda a largura disponível */
-    align-items: flex-start; /* Alinhar os elementos à esquerda */
+    gap: 10px; 
+    width: 100%; 
+    align-items: flex-start; 
     margin-top: 20px;
 }
 
-/* Estilo para os rótulos dos campos de edição */
+/* nome dos campos na edicao */
 .edit-property-form label {
     font-size: 14px;
     color: #444;
-    margin-bottom: 5px; /* Espaço entre o rótulo e o campo */
+    margin-bottom: 5px; 
 }
 
-/* Estilo para os campos de input durante a edição */
+ 
 .edit-property-form input {
-    width: 100%; /* Faz o input ocupar toda a largura disponível */
+    width: 100%; 
     padding: 8px;
     font-size: 14px;
     border-radius: 5px;
@@ -116,7 +116,7 @@
     box-sizing: border-box;
 }
 
-/* Estilo para os botões de salvar e cancelar */
+/* salvar e cancelar */
 .save-btn {
     background-color: #5F6F52;
     color: white;
@@ -140,8 +140,8 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: 0; /* Centralizado com o botão de salvar */
-    margin-top: 10px; /* Um pouco mais de espaço acima */
+    margin-left: 0; 
+    margin-top: 10px; 
 }
 
 .cancel-btn:hover {
@@ -164,17 +164,17 @@
     background-color: #e60000;
 }
 
-/* Estilo para o ícone de exclusão da propriedade, posicionado mais abaixo */
+/* lixeira*/
 .delete-icon-property {
     position: absolute;
-    top: 370px; /* Posição ajustada para ficar mais embaixo */
+    top: 370px; 
     align-items: center;
     cursor: pointer;
     font-size: 20px;
     color: #ff4d4d;
 }
 
-/* Popup de confirmação */
+/* Popup de connfrimacao */
 .delete-popup-overlay {
     position: fixed;
     top: 0;
