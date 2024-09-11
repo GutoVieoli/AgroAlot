@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaPencilAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import './PropriedadeItem.css';
 
@@ -11,6 +11,7 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
     const [talhoesEdit, setTalhoesEdit] = useState(
         propriedade.talhoes.map(talhao => ({ ...talhao, edit: false, editedNome: talhao.nome }))
     );
+    const [showDeletePopup, setShowDeletePopup] = useState(false); 
     const itemRef = useRef(null);
 
     const handleEditClick = (e) => {
@@ -22,7 +23,7 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         if (itemRef.current && !itemRef.current.contains(e.target)) {
             setEditMode(false);
             setTalhoesEdit(
-                talhoesEdit.map(talhao => ({ ...talhao, edit: false })) // Fecha edição dos talhões ao clicar fora
+                talhoesEdit.map(talhao => ({ ...talhao, edit: false }))
             );
         }
     };
@@ -36,6 +37,10 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
 
     const handleSaveClick = () => {
         console.log('Salvando alterações da propriedade:', editedNome, editedLocalizacao);
+        setEditMode(false);
+    };
+
+    const handleCancelClick = () => {
         setEditMode(false);
     };
 
@@ -58,6 +63,11 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         ));
     };
 
+    const handleTalhaoDeleteClick = (id) => {
+        console.log('Excluindo talhão:', id);
+        setTalhoesEdit(talhoesEdit.filter(talhao => talhao.id !== id));
+    };
+
     const toggleExpand = () => {
         setExpanded(!expanded);
     };
@@ -65,6 +75,23 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
     const handleExpandClick = (e) => {
         e.stopPropagation();
         setExpanded(false);
+        setEditMode(false);
+    };
+
+    // Funções para gerenciar a exclusão da propriedade
+    const handleDeletePropriedadeClick = (e) => {
+        e.stopPropagation();
+        setShowDeletePopup(true); 
+    };
+
+    const handleConfirmDelete = () => {
+        console.log('Excluindo propriedade:', propriedade.id);
+        setShowDeletePopup(false); 
+        // Lógica para excluir a propriedade no backend aqui
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeletePopup(false); 
     };
 
     return (
@@ -74,27 +101,32 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
             onClick={() => !expanded && toggleExpand()}
         >
             {editMode ? (
-                <div className="edit-mode">
-                    <input
-                        type="text"
-                        value={editedNome}
-                        onChange={(e) => setEditedNome(e.target.value)}
-                        className="edit-input"
+                <div className="edit-property-form">
+                    <label htmlFor={`nome-propriedade-${propriedade.id}`}>Nome da Propriedade</label>
+                    <input 
+                        id={`nome-propriedade-${propriedade.id}`}
+                        type="text" 
+                        value={editedNome} 
+                        onChange={(e) => setEditedNome(e.target.value)} 
                     />
-                    <input
-                        type="text"
-                        value={editedLocalizacao}
-                        onChange={(e) => setEditedLocalizacao(e.target.value)}
-                        className="edit-input"
+        
+                    <label htmlFor={`localizacao-propriedade-${propriedade.id}`}>Localização</label>
+                    <input 
+                        id={`localizacao-propriedade-${propriedade.id}`}
+                        type="text" 
+                        value={editedLocalizacao} 
+                        onChange={(e) => setEditedLocalizacao(e.target.value)} 
                     />
+        
                     <button onClick={handleSaveClick} className="save-btn">Salvar</button>
+                    <button onClick={handleCancelClick} className="cancel-btn">Cancelar</button>
                 </div>
             ) : (
                 <>
                     <h3>{propriedade.nome}</h3>
                     {expanded && (
                         <div className="talhoes-detalhes">
-                            <h4>Detalhes da Propriedade:</h4>
+                            
                             <p>Localização: {propriedade.localizacao}</p>
                             <p>Área Total: {propriedade.areaTotal} ha</p>
                             <h4>Talhões:</h4>
@@ -103,7 +135,7 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                                     {talhao.edit ? (
                                         <>
                                             <input
-                                                type="text"
+                                                type="text" 
                                                 value={talhao.editedNome}
                                                 onChange={(e) => handleTalhaoNomeChange(talhao.id, e.target.value)}
                                                 className="edit-input"
@@ -113,6 +145,12 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                                                 className="save-btn"
                                             >
                                                 Salvar
+                                            </button>
+                                            <button
+                                                onClick={() => handleTalhaoDeleteClick(talhao.id)}
+                                                className="delete-btn"
+                                            >
+                                                Excluir
                                             </button>
                                         </>
                                     ) : (
@@ -137,16 +175,32 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
             )}
 
             {expanded && !editMode && (
-                <FaPencilAlt 
-                className="edit-icon-property" 
-                onClick={handleEditClick} 
-            />
+                <>
+                    <FaPencilAlt 
+                        className="edit-icon-property" 
+                        onClick={handleEditClick} 
+                    />
+                    <FaTrashAlt 
+                        className="delete-icon-property" 
+                        onClick={handleDeletePropriedadeClick} 
+                    />
+                </>
             )}
-
 
             {expanded && (
                 <div className="expand-icon" onClick={handleExpandClick}>
                     -
+                </div>
+            )}
+
+            {/* Popup de confirmação para excluir a propriedade */}
+            {showDeletePopup && (
+                <div className="delete-popup-overlay">
+                    <div className="delete-popup">
+                        <p>Tem certeza que deseja excluir a propriedade?</p>
+                        <button onClick={handleConfirmDelete} className="confirm-btn">Sim</button>
+                        <button onClick={handleCancelDelete} className="cancel-btn">Não</button>
+                    </div>
                 </div>
             )}
         </div>

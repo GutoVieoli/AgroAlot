@@ -88,3 +88,139 @@
     border-radius: 5px;
     width: 90%;
 }
+
+/* Estilo para o formulário de edição */
+.edit-property-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaçamento entre os campos */
+    width: 100%; /* Para ocupar toda a largura disponível */
+    align-items: flex-start; /* Alinhar os elementos à esquerda */
+    margin-top: 20px;
+}
+
+/* Estilo para os rótulos dos campos de edição */
+.edit-property-form label {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 5px; /* Espaço entre o rótulo e o campo */
+}
+
+/* Estilo para os campos de input durante a edição */
+.edit-property-form input {
+    width: 100%; /* Faz o input ocupar toda a largura disponível */
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Estilo para os botões de salvar e cancelar */
+.save-btn {
+    background-color: #5F6F52;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.save-btn:hover {
+    background-color: #4a5a40;
+}
+
+.cancel-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 0; /* Centralizado com o botão de salvar */
+    margin-top: 10px; /* Um pouco mais de espaço acima */
+}
+
+.cancel-btn:hover {
+    background-color: #c0392b;
+}
+
+/* botao de deletar talhao */
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background-color: #e60000;
+}
+
+/* Estilo para o ícone de exclusão da propriedade, posicionado mais abaixo */
+.delete-icon-property {
+    position: absolute;
+    top: 370px; /* Posição ajustada para ficar mais embaixo */
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    color: #ff4d4d;
+}
+
+/* Popup de confirmação */
+.delete-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.delete-popup {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.confirm-btn {
+    background-color: #34a853;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+.confirm-btn:hover {
+    background-color: #2c8e44;
+}
+
+.cancel-btn {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #cc3333;
+}
