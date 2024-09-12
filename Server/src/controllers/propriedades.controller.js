@@ -10,10 +10,10 @@ function capitalizeWords(text) {
 }
 
 
-const procuraPropriedade = async (nome) => {
+const procuraPropriedade = async (nome, id_usuario) => {
     nome = capitalizeWords(nome);
     const procuraPropriedade = await propriedades.findOne( {
-        where: { nome }
+        where: { nome, id_usuario }
     })
     return procuraPropriedade
 }
@@ -27,11 +27,10 @@ const cadastrarPropriedade = async (requisicao, resposta) => {
 
     
     if(nome && tokenJWT && localizacao){
-        const existePropriedade = await procuraPropriedade(nome)
+        const id_usuario = getID(tokenJWT)
+        const existePropriedade = await procuraPropriedade(nome, id_usuario)
 
         if( !existePropriedade){
-            const id_usuario = getID(tokenJWT)
-
             await propriedades.create({
                 nome, localizacao, id_usuario
             }).then( () => {
@@ -68,4 +67,4 @@ const listarPropriedades = async (requisicao, resposta) => {
 
 }
 
-module.exports = {cadastrarPropriedade, listarPropriedades};
+module.exports = {cadastrarPropriedade, listarPropriedades, procuraPropriedade};

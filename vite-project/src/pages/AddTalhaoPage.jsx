@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
@@ -7,8 +7,9 @@ const AddTalhaoPage = () => {
     const [nomeTalhao, setNomeTalhao] = useState('');
     const [cultura, setCultura] = useState('');
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
+    const [arquivo, setArquivo] = useState(null);
     const [modo, setModo] = useState('manual');
-    const [erroMsg, setErroMsg] = useState('');
+    const [erroMsg, setMsg] = useState('');
 
     const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);  // Prpriedades para a escolha
     const [recarregarPropriedades, setRecarregarPropriedades] = useState(false); // Estado para controle de recarga
@@ -30,6 +31,9 @@ const AddTalhaoPage = () => {
         "Trigo",
     ];
 
+    // Referência para o input de arquivo
+    const arquivoInputRef = useRef(null); 
+
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
@@ -50,7 +54,7 @@ const AddTalhaoPage = () => {
 
             } catch (error) {
                 console.error('Erro ao buscar propriedades:', error);
-                setErroMsg('Erro ao carregar propriedades cadastradas.');
+                setMsg('Erro ao carregar propriedades cadastradas.');
             }
         };
 
@@ -75,48 +79,64 @@ const AddTalhaoPage = () => {
         }
     };
 
-    const handleSubmitManual = (e) => {
+    const handleSubmitManual = async (e) => {
         e.preventDefault();
-
-        if (coordenadas.length < 3) {
-            setErroMsg("Você precisa adicionar pelo menos 3 pontos de coordenadas.");
-            return;
+        const tokenJWT = localStorage.getItem('tokenJWT');
+        const formData = new FormData();
+        
+        if(modo === 'manual'){
+            const formData = {
+                nome: nomeTalhao,
+                propriedade,
+                cultura,
+                coordenadas,
+            };
+        }
+        else if(modo === 'arquivo'){
+            formData.append('tokenJWT', tokenJWT)
+            formData.append('modo', modo);
+            formData.append('arquivo', arquivo); // Adiciona o arquivo
+            formData.append('nome', nomeTalhao); // Adiciona o nome do talhão
+            formData.append('propriedade', propriedade); // Adiciona a propriedade
+            formData.append('cultura', cultura); // Adiciona a cultura
         }
 
-        const dados = {
-            nome,
-            propriedade,
-            cultura,
-            coordenadas,
-        };
-
-        fetch('http://localhost:3000/novo-talhao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dados),
-        })
-        .then(response => {
+        try {
+            // Enviando a requisição para o servidor
+            const response = await fetch('http://localhost:3000/talhoes/cadastrar', {
+                method: 'POST',
+                headers: {
+                    // Não precisa definir 'Content-Type', o navegador faz isso automaticamente para FormData
+                    'Authorization': `Bearer ${tokenJWT}` // Passando o token no header
+                },
+                body: formData // O body é o FormData contendo o arquivo e os dados
+            });
+    
             if (!response.ok) {
-                return response.json().then((error) => {
-                    setErroMsg(error.message);
-                    throw new Error(`Erro HTTP! status: ${response.status}, message: ${error.message}`);
-                });
+                const error = await response.json();
+                setMsg(error.message);
+                return;
             }
-            return response.json();
-        })
-        .then(data => {
+    
+            const data = await response.json();
+    
+            // Limpar os campos após o sucesso
             setNomeTalhao('');
             setPropriedade('');
             setCultura('');
-            setCoordenadas(['', '', '']);
-            setErroMsg(''); 
-        })
-        .catch((error) => {
-            console.error('Erro:', error);
-        });
+            setArquivo(null); // Limpa o arquivo do estado
+            setMsg(data.message); // Limpar mensagem de erro
+
+            // Limpar o campo de upload de arquivo manualmente
+            if (arquivoInputRef.current) {
+                arquivoInputRef.current.value = ''; // Limpa o valor do input
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            setMsg('Erro ao adicionar o talhão.');
+        }
     };
+
 
     const handleAddPropriedade = async () => {
         // Função para enviar a nova propriedade ao backend
@@ -135,10 +155,10 @@ const AddTalhaoPage = () => {
             });
 
             if (!response.ok) {
-                setErroMsg('Erro ao salvar a propriedade...')
+                setMsg('Erro ao salvar a propriedade...')
                 throw new Error('Erro ao salvar a propriedade');
             } else {
-                setErroMsg('Propriedade Salva com sucesso!')
+                setMsg('Propriedade Salva com sucesso!')
                 setRecarregarPropriedades(prev => !prev); // Alterna o estado, causando a recarga das propriedades salvas
             }
 
@@ -265,8 +285,9 @@ const AddTalhaoPage = () => {
 
                     {modo === 'arquivo' && (
                         <div className="form-group">
-                            <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
-                            <input type="file" id="arquivo" accept=".json,.geojson" required />
+                            <label htmlFor="arquivo">Arquivo (GeoJSON)</label>
+                            <input type="file" id="arquivo" accept=".geojson" ref={arquivoInputRef}
+                                onChange={ (e) => setArquivo(e.target.files[0])} required />
                         </div>
                     )}
                     <button type="submit" className="submit-btn">Adicionar Talhão</button>

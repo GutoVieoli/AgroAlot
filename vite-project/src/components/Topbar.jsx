@@ -33,7 +33,7 @@ const Topbar = () => {
                     <div className="line2"></div>
                     <div className="line3"></div>
                 </div>
-                <Link to='/' class='linklogo'>
+                <Link to='/' className='linklogo'>
                     <img className='logo' src={Logo} alt='Logotipo. Drone sobevoando plantação' />
                 </Link>
                 <img className='perfil' src={Perfil} alt='Logotipo do perfil do usuario' />

@@ -1,7 +1,7 @@
 const db = require('./db');
 const Sequelize = require('sequelize');  // Assumindo que você já tenha configurado a conexão ao banco de dados
 
-const talhao = db.define('talhao', {
+const talhoes = db.define('talhoes', {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -38,6 +38,6 @@ const talhao = db.define('talhao', {
 
 
 // Caso a tabela não exista, ela é criada automaticamente
-propriedades.sync();
+talhoes.sync();
 
-module.exports = talhao;
+module.exports = talhoes;
