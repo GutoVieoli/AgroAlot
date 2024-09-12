@@ -102,7 +102,7 @@ const EditAccount = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ senha: userData.senha }) // enviando senha nva
+            body: JSON.stringify({ senha: userData.senha }) // enviando senha nova
         })
         .then((response) => {
             if (!response.ok) {
