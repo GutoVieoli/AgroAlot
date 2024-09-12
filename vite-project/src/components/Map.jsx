@@ -5,11 +5,15 @@ const Map = (filtro) => {
     const apiKey = import.meta.env.VITE_API_KEY;
 
     const loadScript = (url, callback) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.onload = callback;
-        document.head.appendChild(script);
+        if(!document.querySelector(`script[src="${url}"]`)){
+            const script = document.createElement('script');
+            script.src = `${url}&loading=async`;
+            script.async = true;
+            script.onload = callback;
+            document.head.appendChild(script);
+        } else {
+            callback();
+        }
     };
 
     
