@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
@@ -9,7 +9,7 @@ const AddTalhaoPage = () => {
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
     const [arquivo, setArquivo] = useState(null);
     const [modo, setModo] = useState('manual');
-    const [erroMsg, setErroMsg] = useState('');
+    const [erroMsg, setMsg] = useState('');
 
     const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);  // Prpriedades para a escolha
     const [recarregarPropriedades, setRecarregarPropriedades] = useState(false); // Estado para controle de recarga
@@ -31,6 +31,9 @@ const AddTalhaoPage = () => {
         "Trigo",
     ];
 
+    // Referência para o input de arquivo
+    const arquivoInputRef = useRef(null); 
+
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
@@ -51,7 +54,7 @@ const AddTalhaoPage = () => {
 
             } catch (error) {
                 console.error('Erro ao buscar propriedades:', error);
-                setErroMsg('Erro ao carregar propriedades cadastradas.');
+                setMsg('Erro ao carregar propriedades cadastradas.');
             }
         };
 
@@ -111,23 +114,26 @@ const AddTalhaoPage = () => {
     
             if (!response.ok) {
                 const error = await response.json();
-                console.error('Erro no servidor:', error);
-                setErroMsg(error.message);
+                setMsg(error.message);
                 return;
             }
     
             const data = await response.json();
-            console.log('Resposta do servidor:', data);
     
             // Limpar os campos após o sucesso
             setNomeTalhao('');
             setPropriedade('');
             setCultura('');
             setArquivo(null); // Limpa o arquivo do estado
-            setErroMsg(''); // Limpar mensagem de erro
+            setMsg(data.message); // Limpar mensagem de erro
+
+            // Limpar o campo de upload de arquivo manualmente
+            if (arquivoInputRef.current) {
+                arquivoInputRef.current.value = ''; // Limpa o valor do input
+            }
         } catch (error) {
             console.error('Erro na requisição:', error);
-            setErroMsg('Erro ao adicionar o talhão.');
+            setMsg('Erro ao adicionar o talhão.');
         }
     };
 
@@ -149,10 +155,10 @@ const AddTalhaoPage = () => {
             });
 
             if (!response.ok) {
-                setErroMsg('Erro ao salvar a propriedade...')
+                setMsg('Erro ao salvar a propriedade...')
                 throw new Error('Erro ao salvar a propriedade');
             } else {
-                setErroMsg('Propriedade Salva com sucesso!')
+                setMsg('Propriedade Salva com sucesso!')
                 setRecarregarPropriedades(prev => !prev); // Alterna o estado, causando a recarga das propriedades salvas
             }
 
@@ -279,8 +285,8 @@ const AddTalhaoPage = () => {
 
                     {modo === 'arquivo' && (
                         <div className="form-group">
-                            <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
-                            <input type="file" id="arquivo" accept=".json,.geojson" 
+                            <label htmlFor="arquivo">Arquivo (GeoJSON)</label>
+                            <input type="file" id="arquivo" accept=".geojson" ref={arquivoInputRef}
                                 onChange={ (e) => setArquivo(e.target.files[0])} required />
                         </div>
                     )}

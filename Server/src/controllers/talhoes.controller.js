@@ -1,6 +1,8 @@
+const turf = require('@turf/turf');
+const fs = require('fs').promises; // Para trabalhar com o conteúdo do arquivo
+
 const talhoes = require('../models/talhoes.model');
 const propriedades = require('../controllers/propriedades.controller')
-const fs = require('fs').promises; // Para trabalhar com o conteúdo do arquivo
 const { getID, getNome } = require('../auth/autenticacao');
 const { where } = require('sequelize');
 
@@ -20,11 +22,12 @@ const procuraTalhao = async (nomeTalhao, idPropriedade) => {
     return busca
 }
 
-const verificaArquivo = (arquivo, res) => {
+const verificaArquivo = (arquivo) => {
     const fileContent = arquivo.buffer.toString('utf-8');
     let parsedData;
     try {
         parsedData = JSON.parse(fileContent); // Tente fazer o parse do arquivo
+        //console.log(parsedData)
 
         if (!parsedData.features[0].geometry.coordinates[0] || !Array.isArray(parsedData.features)) 
             return { error: 'Arquivo GeoJSON inválido. As coordenadas não foram encontradas.' };
@@ -33,16 +36,20 @@ const verificaArquivo = (arquivo, res) => {
         return { error: 'Arquivo inválido! Deve ser um GeoJSON válido.' };
     }
 
-    return parsedData;
+    return {erro: null, data: parsedData};
 }
 
 // Rota para processar o arquivo e dados do formulário
 const cadastrarPropriedade =  async (req, res) => {
     const { tokenJWT, nome, cultura, propriedade, modo } = req.body;
     const arquivo = req.file;
-    const id_usuario = await getID(tokenJWT)
-
+    
     try {
+        const id_usuario = await getID(tokenJWT)
+        if (!id_usuario) {
+            return res.status(401).json({ message: 'Usuário não autenticado.' });
+        }
+
         const existePropriedade = await propriedades.procuraPropriedade(propriedade, id_usuario)
         if(!existePropriedade)
             return res.status(400).json({ message: 'A propriedade informada não existe no sistema.' });
@@ -58,15 +65,15 @@ const cadastrarPropriedade =  async (req, res) => {
             return res.status(400).json({ message: error });  // Enviar o erro caso ocorra
         }
 
-        // Agora, vamos simular a inserção dos dados no banco de dados
-        // Substitua por sua lógica de banco de dados para salvar o talhão, cultura, etc.
-        console.log('Nome do talhão:', nome);
-        console.log('Cultura:', cultura);
-        console.log('Propriedade:', propriedade);
-        console.log('Conteúdo do arquivo:', parsedData);
+        areaTalhao = calculaArea(parsedData.features[0].geometry.coordinates)
 
-        // Exemplo: Inserir no banco (substitua com sua lógica real)
-        // await db.insert({ nome, cultura, propriedade, fileContent: parsedData });
+        const novoTalhao = await talhoes.create({
+            nome,
+            cultura,
+            area: areaTalhao,
+            geojson_data: parsedData,
+            id_propriedade
+        })
 
         res.status(200).json({ message: 'Talhão adicionado com sucesso!' });
 
@@ -77,37 +84,19 @@ const cadastrarPropriedade =  async (req, res) => {
 };
 
 
-const cadastrarPropriedad = async (requisicao, resposta) => {
-    const nome = capitalizeWords(requisicao.body.nome);
-    const tokenJWT = requisicao.body.tokenJWT
-    const localizacao = requisicao.body.localizacao
 
+const calculaArea = (coordinates) => {
     
-    if(nome && tokenJWT && localizacao){
-        const existePropriedade = await procuraPropriedade(nome)
+    // Crie um polígono usando Turf.js
+    const polygon = turf.polygon(coordinates);
+    // Calcule a área do polígono em metros quadrados
+    const area_m2 = turf.area(polygon);
+    // Converta a área para hectares (1 hectare = 10,000 metros quadrados)
+    const area_hectares = area_m2 / 10000;
 
-        if( !existePropriedade){
-            const id_usuario = getID(tokenJWT)
-
-            await propriedades.create({
-                nome, localizacao, id_usuario
-            }).then( () => {
-                resposta.status(201).send({
-                    message: 'Propriedade criada com sucesso!'
-                })
-            }).catch( () => {
-                resposta.status(500).send({message: 'Ocorreu algum erro inesperado!'})
-            });
-        }
-        else {                                
-            resposta.status(400).send({message: 'Propriedade já existente.'})
-        }
-    } 
-    else {
-        resposta.status(400).send({message: "Campos faltantes."})
-    }
+    console.log(`A área do polígono é de ${area_m2.toFixed(2)} metros quadrados ou ${area_hectares.toFixed(2)} hectares.`);
+    return area_hectares.toFixed(2)
 }
-
 
 
 module.exports = {cadastrarPropriedade};
