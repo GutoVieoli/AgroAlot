@@ -7,7 +7,6 @@ import BlockedMap from '../pages/BlockedMap';
 import Cadastro from '../pages/Cadastro';
 import AddTalhaoPage from '../pages/AddTalhaoPage';
 import TelaPropriedade from '../pages/TelaPropriedade';
-import EditAccount from '../pages/EditAccount';
 
 
 const Private = ({ Pagina }) => {
@@ -67,7 +66,6 @@ const Rotas = () => {
               <Route path="/add-talhao" element={<Private Pagina={AddTalhaoPage} /> } />
               <Route path="/telapropriedade" element={<Private Pagina={TelaPropriedade} /> } />
               <Route path='*' element={<Login />} />
-              <Route path="/edit-account" element={<Private Pagina={EditAccount} /> } /> {/* Nova rota */}
           </Routes>
       </BrowserRouter> 
     )
