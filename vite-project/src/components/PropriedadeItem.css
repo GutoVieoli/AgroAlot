@@ -1,19 +1,19 @@
 /* Estilo para o ícone de lápis no nome e localização da propriedade */
 .edit-icon-property {
     position: absolute;
-    top: 7px;   /* Posiciona o ícone no canto superior */
-    right: 40px; /* Posiciona o ícone no canto direito */
-    font-size: 20px;  /* Tamanho do ícone */
+    top: 7px;
+    right: 40px;
+    font-size: 20px;
     cursor: pointer;
     color: gray;
     transition: color 0.3s ease;
 }
 
 .edit-icon-property:hover {
-    color: #5F6F52; /* Cor ao passar o mouse */
+    color: #5F6F52;
 }
 
-/* Estilo geral */
+/* Estilo geral para o item de propriedade */
 .propriedade-item {
     position: relative;
     padding: 30px;
@@ -35,6 +35,28 @@
     grid-column: span 2;
 }
 
+/* Estilo dos nomes das propriedades */
+.propriedade-item h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+    color: #fff; /* Ajuste para melhor contraste */
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: capitalize;
+}
+
+/* Ícone de expansão */
+.expand-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+}
+
+/* Estilo para os detalhes dos talhões */
 .talhoes-detalhes {
     width: 100%;
     padding: 15px;
@@ -45,24 +67,31 @@
     color: #333;
 }
 
+/* Estilo para cada item de talhão */
 .talhao-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
     margin-top: 7px;
-    padding: 10px;
+    margin-bottom: 10px;
+    padding: 12px;
     background-color: #e0e0e0;
-    border-radius: 5px;
+    border-radius: 6px;
     transition: background-color 0.3s ease;
+    width: 90%;
+    color: #333;
+    cursor: pointer; /* Adicionado para indicar interatividade */
 }
-
-
 
 .talhao-item:hover {
     background-color: #b0b0b0;
 }
 
+.talhao-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Ícone de edição nos talhões */
 .edit-icon {
     font-size: 16px;
     cursor: pointer;
@@ -70,9 +99,7 @@
     color: gray;
 }
 
-
-
-
+/* Modo de edição */
 .edit-mode .edit-input {
     margin: 10px 0;
     padding: 10px;
@@ -82,22 +109,21 @@
 }
 
 .talhao-item input {
-    width: 45%; 
-    padding: 9px; 
-    font-size: 16px; 
-    border-radius: 5px; 
-    border: 1px solid #ccc; 
-    box-sizing: border-box; 
+    width: 45%;
+    padding: 9px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
-
 
 /* Estilo para o formulário de edição */
 .edit-property-form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espaçamento entre os campos */
-    width: 100%; /* Para ocupar toda a largura disponível */
-    align-items: flex-start; /* Alinhar os elementos à esquerda */
+    gap: 10px;
+    width: 100%;
+    align-items: flex-start;
     margin-top: 20px;
 }
 
@@ -105,12 +131,12 @@
 .edit-property-form label {
     font-size: 14px;
     color: #444;
-    margin-bottom: 5px; /* Espaço entre o rótulo e o campo */
+    margin-bottom: 5px;
 }
 
 /* Estilo para os campos de input durante a edição */
 .edit-property-form input {
-    width: 100%; /* Faz o input ocupar toda a largura disponível */
+    width: 100%;
     padding: 8px;
     font-size: 14px;
     border-radius: 5px;
@@ -122,14 +148,14 @@
 .save-btn {
     background-color: #5F6F52;
     color: white;
-    padding: 12px 24px;  
+    padding: 12px 24px;
     font-size: 13px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-right: 10px;
+    margin-top: 10px;
     transition: background-color 0.3s ease;
-    
 }
 
 .save-btn:hover {
@@ -143,15 +169,15 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
     transition: background-color 0.3s ease;
-   
 }
 
 .cancel-btn:hover {
     background-color: #91291e;
 }
 
-/* botao de deletar talhao */
+/* Botão de deletar talhão */
 .delete-btn {
     background-color: #740606;
     color: white;
@@ -159,15 +185,15 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     margin-left: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .delete-btn:hover {
     background-color: #e60000;
 }
 
-
+/* Ícone de deletar propriedade */
 .delete-icon-property {
     margin-top: 20px;
     align-items: center;
@@ -176,7 +202,7 @@
     color: #ff4d4d;
 }
 
-/* Popup de confirmação */
+/* Popup de confirmação para deletar */
 .delete-popup-overlay {
     position: fixed;
     top: 0;
@@ -198,6 +224,7 @@
     text-align: center;
 }
 
+/* Botão de confirmação */
 .confirm-btn {
     background-color: #34a853;
     color: white;
@@ -205,25 +232,22 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     margin-right: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .confirm-btn:hover {
     background-color: #2c8e44;
 }
 
-
 /* Estilo geral dos botões de ação */
 .action-buttons {
     display: flex;
     gap: 10px;
-    margin-bottom:8px ;
+    margin-bottom: 8px;
 }
 
-
-
-/* Estilo para o ícone de lixeira */
+/* Ícone de deletar */
 .delete-icon {
     margin-top: 18px;
     font-size: 22px;
@@ -236,7 +260,74 @@
     color: #e60000;
 }
 
-/* Ajuste para alinhar corretamente os botões */
-.save-btn, .cancel-btn {
-    margin-top: 10px;
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+
+    /* Mantém o tamanho fixo do bloco da propriedade, mesmo expandido */
+    .propriedade-item {
+        height: 250px;
+        overflow: hidden;
+        transition: height 0.3s ease;
+    }
+
+    /* Propriedade expandida, revela o conteúdo */
+    .propriedade-item.expanded {
+        height: 350px;
+    }
+
+    /* Para o conteúdo extra (detalhes da propriedade) */
+    .talhoes-detalhes {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Exibe o conteúdo extra quando expandido */
+    .propriedade-item.expanded .talhoes-detalhes {
+        max-height: 200px;
+        opacity: 1;
+    }
+
+    /* Ajusta o item do talhão */
+    .talhao-item {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .talhao-item input,
+    .talhao-item .save-btn,
+    .talhao-item .cancel-btn {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    /* Ajusta os botões e ícones */
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-buttons .save-btn,
+    .action-buttons .cancel-btn,
+    .action-buttons .delete-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Garante que o texto quebre linha se necessário */
+    h3, h4, p {
+        word-wrap: break-word;
+    }
+
+    /* Ajuste para o botão de minimizar */
+    .expand-icon {
+        font-size: 20px;
+        color: #333;
+    }
+
+    .expand-icon:hover {
+        color: #000;
+    }
 }
