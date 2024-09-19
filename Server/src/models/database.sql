@@ -36,3 +36,36 @@ CREATE TABLE IF NOT EXISTS ndvi (
     id_talhao INT,
     FOREIGN KEY (id_talhao) REFERENCES talhoes(id)
 );
+
+
+DELIMITER //
+CREATE TRIGGER atualiza_area_total_apos_insert
+AFTER INSERT ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total + NEW.area
+    WHERE id = NEW.id_propriedade;
+END;
+
+CREATE TRIGGER atualiza_area_total_apos_delete
+AFTER DELETE ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total - OLD.area
+    WHERE id = OLD.id_propriedade;
+END;
+
+CREATE TRIGGER atualiza_area_total_apos_update
+AFTER UPDATE ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total - OLD.area + NEW.area
+    WHERE id = NEW.id_propriedade;
+END;
+
+//
+
+DELIMITER ;
