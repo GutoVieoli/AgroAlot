@@ -58,10 +58,15 @@ const TelaPropriedade = () => {
                     nome: propriedade.nome,
                     localizacao: propriedade.localizacao,
                     areaTotal: propriedade.area_total,
-                    talhoes: [
-                        { id: 1, nome: `Talhão ${index + 1}`, area: 15 },
-                        { id: 2, nome: `Talhão ${index + 2}`, area: 20 }
-                    ]
+
+                    talhoes: propriedade.talhoes.map( (talhao) => {
+                        return {
+                            id: talhao.id,
+                            nome: `Talhão ${talhao.nome}`,
+                            area: talhao.area
+                        }
+                    })
+
                 };
             });
     

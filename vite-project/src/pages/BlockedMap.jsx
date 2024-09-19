@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Map from '../components/Map';
 import Topbar from '../components/Topbar';
 import GraficoNDVI from '../components/GraficoNDVI';
 import './BlockedMap.css';
 
 const BlockedMap = () => {
+    const [searchParams] = useSearchParams();
+    const talhaoId = searchParams.get('talhao_id');
+
     const [data, setData] = useState('');
     const [filtro, setFiltro] = useState('');
     const [renderizacao, setRenderizacao] = useState('');
     const [erroInvalido, setErroInvalido] = useState('');
     const [dadosNDVI, setDadosNDVI] = useState([]);
 
+    useEffect(() => {
+        console.log(talhaoId)
+    }, []);
 
     const handleApply = () => {
         fetch('http://localhost:3000/requestMap/mapalivre', {

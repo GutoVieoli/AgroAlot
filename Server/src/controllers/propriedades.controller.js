@@ -1,4 +1,5 @@
 const propriedades = require('../models/propriedades.model');
+const talhoes = require('../models/talhoes.model');
 const { getID, getNome } = require('../auth/autenticacao');
 const { where } = require('sequelize');
 
@@ -54,17 +55,25 @@ const listarPropriedades = async (requisicao, resposta) => {
     const tokenJWT = requisicao.body.tokenJWT
     const id_usuario = getID(tokenJWT)
 
-    await propriedades.findAll( {
+    await propriedades.findAll({
         attributes: ['id', 'nome', 'localizacao', 'area_total'],
-        where: { id_usuario }
-    } ).then( (propriedadesSalvas) => {
+        where: { id_usuario },
+        include: [
+          {
+            model: talhoes,
+            attributes: ['id', 'nome', 'area']
+          }
+        ]
+      })
+      .then((propriedadesSalvas) => {
+        console.log(propriedadesSalvas[0].talhoes)
         resposta.status(201).send({
-            propriedades: propriedadesSalvas
-        })
-    }).catch( () => {
-        resposta.status(500).send({message: 'Ocorreu algum erro inesperado no server!'})
-    });
-
+          propriedades: propriedadesSalvas
+        });
+      })
+      .catch(() => {
+        resposta.status(500).send({ message: 'Ocorreu algum erro inesperado no servidor!' });
+      });
 }
 
 module.exports = {cadastrarPropriedade, listarPropriedades, procuraPropriedade};
