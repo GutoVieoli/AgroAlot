@@ -1,16 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Map from '../components/Map';
 import Topbar from '../components/Topbar';
 import GraficoNDVI from '../components/GraficoNDVI';
 import './BlockedMap.css';
 
 const BlockedMap = () => {
+    const effectRan = useRef(false);
+    const [searchParams] = useSearchParams();
+
+    const talhaoId = searchParams.get('talhao');
+    const propriedadeId = searchParams.get('propriedade');
+
+    const [propriedade_nome, setPropriedadeNome] = useState('Fazenda');
+    const [talhao_nome, setTalhaoNome] = useState('ABC');
+    const [talhao_area, setTalhaoArea] = useState(5.80);
+    const [talhao_cultura, setTalhaoCultura] = useState('Milho');
+
     const [data, setData] = useState('');
     const [filtro, setFiltro] = useState('');
     const [renderizacao, setRenderizacao] = useState('');
     const [erroInvalido, setErroInvalido] = useState('');
     const [dadosNDVI, setDadosNDVI] = useState([]);
 
+    useEffect( () => {
+        if (effectRan.current) return;  // Impede execuções subsequentes
+        async function fetchDadosTalhao() {
+            try {
+                const tokenJWT = localStorage.getItem('tokenJWT');
+                const response = await fetch('http://localhost:3000/propriedades/dados_talhao', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        propriedade_id : propriedadeId,
+                        talhao_id : talhaoId,
+                        tokenJWT
+                    }),
+                });
+    
+                const data = await response.json()
+                setPropriedadeNome(data.data[0].nome);
+                setTalhaoNome(data.data[0].talhoes[0].nome);
+                setTalhaoArea(data.data[0].talhoes[0].area);
+                setTalhaoCultura(data.data[0].talhoes[0].cultura);
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+            }
+        }
+
+        fetchDadosTalhao();
+        effectRan.current = true; // Marca que o efeito já foi executado
+    }, []);
 
     const handleApply = () => {
         fetch('http://localhost:3000/requestMap/mapalivre', {
@@ -54,8 +96,8 @@ const BlockedMap = () => {
             <Topbar />
             <div>
                 <div className="dadosPropriedade">
-                    <h1 className="nome">Propriedade "Campinho" - Talhão "A02"</h1>
-                    <h2 className="sobre">16.45 ha - Feijão</h2>
+                    <h1 className="nome">{propriedade_nome} - Talhão "{talhao_nome}"</h1>
+                    <h2 className="sobre">{talhao_area} ha - {talhao_cultura}</h2>
                 </div>
 
                 <div className="areaBotoes">

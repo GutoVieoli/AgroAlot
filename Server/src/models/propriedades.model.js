@@ -1,4 +1,5 @@
 const db = require('./db');
+const talhoes = require('./talhoes.model');
 const Sequelize = require('sequelize');
 
 const propriedades = db.define('propriedades', {
@@ -36,5 +37,7 @@ const propriedades = db.define('propriedades', {
 
 // Caso a tabela não exista, ela é criada automaticamente
 propriedades.sync();
+
+propriedades.hasMany(talhoes, { foreignKey: 'id_propriedade' });
 
 module.exports = propriedades;
