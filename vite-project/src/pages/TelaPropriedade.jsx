@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
 import PropriedadeItem from '../components/PropriedadeItem';
 import './TelaPropriedade.css';
 
 const TelaPropriedade = () => {
+
+    const effectRan = useRef(false);
     const [propriedades, setPropriedades] = useState([]);
     const [propriedadeSelecionada, setPropriedadeSelecionada] = useState(null);
     const [adicionarPropriedade, setAdicionarPropriedade] = useState(false);
@@ -15,10 +17,13 @@ const TelaPropriedade = () => {
     const usarDadosSimulados = false;
 
     useEffect(() => {
-        if (usarDadosSimulados) {
-            carregarDadosSimulados();
-        } else {
-            carregarPropriedadesDoBackend();
+        if (effectRan.current === false) {
+            if (usarDadosSimulados) {
+                carregarDadosSimulados();
+            } else {
+                carregarPropriedadesDoBackend();
+            }
+            effectRan.current = true;
         }
     }, []);
 
@@ -70,7 +75,6 @@ const TelaPropriedade = () => {
                 };
             });
     
-            console.log(propriedadesTransformadas); // Exibe as propriedades transformadas no formato correto
             setPropriedades(propriedadesTransformadas);
             return propriedadesTransformadas; // Retorna o objeto transformado
 

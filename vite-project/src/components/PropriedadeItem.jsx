@@ -157,7 +157,7 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                                         </>
                                     ) : (
                                         <>
-                                            <Link to={`/mapapropriedade?talhao_id=${talhao.id}`}>
+                                            <Link to={`/mapapropriedade?propriedade=${propriedade.id}&talhao=${talhao.id}`}>
                                                 {talhao.nome} - Área: {talhao.area} ha
                                             </Link>
                                             <FaPencilAlt

@@ -66,7 +66,6 @@ const listarPropriedades = async (requisicao, resposta) => {
         ]
       })
       .then((propriedadesSalvas) => {
-        console.log(propriedadesSalvas[0].talhoes)
         resposta.status(201).send({
           propriedades: propriedadesSalvas
         });
@@ -76,4 +75,29 @@ const listarPropriedades = async (requisicao, resposta) => {
       });
 }
 
-module.exports = {cadastrarPropriedade, listarPropriedades, procuraPropriedade};
+const infosTalhaoPropriedade = async (req, res) => {
+    const {propriedade_id, talhao_id, tokenJWT} = req.body
+    const id_usuario = getID(tokenJWT)
+
+    await propriedades.findAll({
+        attributes: ['nome'],
+        where: { id_usuario, id: propriedade_id },
+        include: [
+          {
+            model: talhoes,
+            attributes: ['nome', 'area', 'cultura'],
+            where: {id: talhao_id}
+          }
+        ]
+      })
+      .then((dados) => {
+        res.status(201).send({
+          data: dados
+        });
+      })
+      .catch(() => {
+        res.status(500).send({ message: 'Ocorreu algum erro inesperado no servidor!' });
+      });
+}
+
+module.exports = {cadastrarPropriedade, listarPropriedades, procuraPropriedade, infosTalhaoPropriedade};
