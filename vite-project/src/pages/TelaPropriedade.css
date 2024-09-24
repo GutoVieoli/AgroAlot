@@ -51,7 +51,6 @@
 .propriedade-item.expanded {
     background-color: #e0e0e0;
     min-height: 350px;
-    grid-column: span 2;
 }
 
 .propriedade-item h3 {
