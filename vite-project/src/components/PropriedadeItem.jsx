@@ -12,6 +12,8 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         propriedade.talhoes.map(talhao => ({ ...talhao, edit: false, editedNome: talhao.nome })) 
     );
     const [showDeletePopup, setShowDeletePopup] = useState(false); 
+    const [showTalhaoEditModal, setShowTalhaoEditModal] = useState(false); // Estado do modal de edição do talhão
+    const [talhaoToEdit, setTalhaoToEdit] = useState(null); // Talhão sendo editado no modal
     const itemRef = useRef(null); 
 
     const handleEditClick = (e) => {
@@ -41,16 +43,33 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
     };
 
     const handleTalhaoEditClick = (id) => {
-        setTalhoesEdit(talhoesEdit.map(talhao =>
-            talhao.id === id ? { ...talhao, edit: true } : talhao 
-        ));
+        if (window.innerWidth <= 768) { 
+            // Exibe o modal em telas menores (mobile)
+            setTalhaoToEdit(talhoesEdit.find(talhao => talhao.id === id)); 
+            setShowTalhaoEditModal(true); 
+        } else {
+            // Ativa o modo de edição inline em telas maiores (desktop)
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === id ? { ...talhao, edit: true } : talhao 
+            ));
+        }
     };
 
     const handleTalhaoSaveClick = (id) => {
-        console.log('Salvando alterações do talhão:', talhoesEdit.find(talhao => talhao.id === id));
-        setTalhoesEdit(talhoesEdit.map(talhao =>
-            talhao.id === id ? { ...talhao, edit: false } : talhao 
-        ));
+        if (window.innerWidth <= 768) { 
+            // Fechar o modal em telas menores
+            console.log('Salvando alterações do talhão:', talhaoToEdit);
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === talhaoToEdit.id ? { ...talhaoToEdit, edit: false } : talhao 
+            ));
+            setShowTalhaoEditModal(false);
+        } else {
+            // Fechar o modo de edição inline em telas maiores
+            console.log('Salvando alterações do talhão:', talhoesEdit.find(talhao => talhao.id === id));
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === id ? { ...talhao, edit: false } : talhao 
+            ));
+        }
     };
 
     const handleTalhaoNomeChange = (id, newNome) => {
@@ -183,6 +202,24 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                         <p>Tem certeza que deseja excluir esta propriedade?</p>
                         <button onClick={handleDeleteClick} className="confirm-btn">Confirmar</button>
                         <button onClick={() => setShowDeletePopup(false)} className="cancel-btn">Cancelar</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Edição do Talhão */}
+            {showTalhaoEditModal && talhaoToEdit && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Editar Talhão</h3>
+                        <input
+                            type="text"
+                            value={talhaoToEdit.editedNome}
+                            onChange={(e) => setTalhaoToEdit({ ...talhaoToEdit, editedNome: e.target.value })}
+                        />
+                        <div className="action-buttons">
+                            <button onClick={() => handleTalhaoSaveClick(talhaoToEdit.id)} className="save-btn">Salvar</button>
+                            <button onClick={() => setShowTalhaoEditModal(false)} className="cancel-btn">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             )}

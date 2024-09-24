@@ -32,7 +32,7 @@
 .propriedade-item.expanded {
     background-color: #e0e0e0;
     min-height: 350px;
-    grid-column: span 2;
+   
 }
 
 /* Estilo dos nomes das propriedades */
@@ -81,6 +81,22 @@
     width: 90%;
     color: #333;
     cursor: pointer; /* Adicionado para indicar interatividade */
+
+    
+}
+
+.talhoes-detalhes {
+    width: 100%;
+    max-height: 200px; /* Altura fixa para rolagem */
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: left;
+    color: #333;
+    overflow-y: auto; /* Permite rolagem vertical */
+    overflow-x: hidden; /* Evitar rolagem horizontal */
+    box-sizing: border-box;
 }
 
 .talhao-item:hover {
@@ -165,7 +181,7 @@
 .cancel-btn {
     background-color: #7e7b7b;
     color: white;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -290,11 +306,79 @@
     }
 
     /* Ajusta o item do talhão */
-    .talhao-item {
-        flex-direction: column;
-        align-items: flex-start;
+    .talhoes-detalhes {
         width: 100%;
+        max-height: 200px; /* Altura fixa para permitir rolagem vertical */
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: left;
+        color: #333;
+        overflow-y: auto; /* Rolagem vertical */
+        overflow-x: hidden; /* Evitar rolagem horizontal */
     }
+    
+    /* Itens de talhão dentro do bloco */
+    .talhao-item {
+        padding: 12px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        color: #333;
+        transition: background-color 0.3s ease;
+        width: 100%; /* Mantém o item ocupando toda a largura */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer; /* Indica interatividade */
+    }
+    
+    /* Para rolagem horizontal se for o caso */
+    .talhoes-detalhes-horizontal {
+        display: flex;
+        overflow-x: auto; /* Rolagem horizontal */
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    /* Itens para rolagem horizontal */
+    .talhao-item-horizontal {
+        min-width: 200px; /* Tamanho mínimo para rolagem horizontal */
+        padding: 10px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .talhoes-detalhes-horizontal {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto; /* Rolagem horizontal */
+        padding: 10px;
+        gap: 10px; /* Espaçamento entre os itens */
+    }
+
+    @media (max-width: 480px) {
+        .propriedade-item {
+            padding: 20px;
+            height: auto; /* Garantir que o bloco se ajuste ao conteúdo */
+        }
+        
+        .talhao-item {
+            padding: 10px;
+            font-size: 14px; /* Reduzir tamanho da fonte para melhor ajuste */
+            width: 100%; /* Garante que os itens ocupem toda a largura */
+        }
+        
+        .talhoes-detalhes {
+            max-height: 150px; /* Altura reduzida para pequenas telas */
+            overflow-y: auto;
+        }
+    }
+    
+    
 
     .talhao-item input,
     .talhao-item .save-btn,
@@ -302,6 +386,98 @@
         width: 100%;
         margin-top: 5px;
     }
+
+
+    /* Estilo do Modal de Edição do Talhão */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo mais escuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Sombras mais suaves */
+    width: 90%;
+    max-width: 400px;
+    margin: 10px; /* Garantir espaço nas bordas */
+    text-align: center;
+    position: relative;
+}
+
+.modal-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px 0px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.modal-content .action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-content .save-btn, 
+.modal-content .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content .save-btn {
+    background-color: #5F6F52;
+    color: white;
+}
+
+.modal-content .save-btn:hover {
+    background-color: #4a5a40;
+}
+
+.modal-content .cancel-btn {
+    background-color: #e60000;
+    color: white;
+}
+
+.modal-content .cancel-btn:hover {
+    background-color: #b80000;
+}
+
+/* Garantir espaçamento em telas pequenas */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%; /* O modal ocupa 95% da tela, deixando espaço nas bordas */
+        max-width: 380px;
+        margin: 20px; /* Espaço em volta do modal */
+    }
+}
+
+/* Responsividade para o modal: apenas em telas menores */
+@media (min-width: 769px) {
+    .modal-overlay {
+        display: none; /* Ocultar o modal em telas maiores */
+    }
+}
 
     /* Ajusta os botões e ícones */
     .action-buttons {

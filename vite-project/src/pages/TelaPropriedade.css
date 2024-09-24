@@ -1,3 +1,5 @@
+
+
 /* Container Principal */
 .tela-propriedade-container {
     padding: 20px;
@@ -19,19 +21,6 @@
     }
 }
 
-/* Título Principal */
-.tela-propriedade-container h1 {
-    font-size: 32px;
-    color: #444;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 700;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
-
 /* Itens de Propriedade */
 .propriedade-item {
     position: relative;
@@ -46,7 +35,45 @@
     align-items: center;
     min-height: 250px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* Adicionado para controlar o conteúdo */
 }
+
+.propriedade-item.expanded {
+    background-color: #e0e0e0;
+    min-height: 350px;
+    overflow: visible; /* Permite scroll interno se necessário */
+}
+
+/* Aplicar grid-column: span 2; somente em telas maiores */
+@media (min-width: 769px) {
+    .propriedade-item.expanded {
+        grid-column: span 2;
+    }
+}
+
+/* Em telas pequenas, garantir que o item expandido ocupa apenas uma coluna */
+@media (max-width: 768px) {
+    .propriedade-item.expanded {
+        grid-column: span 1;
+        min-height: auto; /* Ajuste se o min-height causar problemas */
+    }
+}
+
+
+/* Título Principal */
+.tela-propriedade-container h1 {
+    font-size: 32px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+
 
 .propriedade-item.expanded {
     background-color: #e0e0e0;
