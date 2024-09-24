@@ -1,19 +1,19 @@
 /* Estilo para o ícone de lápis no nome e localização da propriedade */
 .edit-icon-property {
     position: absolute;
-    top: 10px;   /* Posiciona o ícone no canto superior */
-    right: 40px; /* Posiciona o ícone no canto direito */
-    font-size: 20px;  /* Tamanho do ícone */
+    top: 7px;
+    right: 40px;
+    font-size: 20px;
     cursor: pointer;
     color: gray;
     transition: color 0.3s ease;
 }
 
 .edit-icon-property:hover {
-    color: #5F6F52; /* Cor ao passar o mouse */
+    color: #5F6F52;
 }
 
-/* Estilo geral */
+/* Estilo geral para o item de propriedade */
 .propriedade-item {
     position: relative;
     padding: 30px;
@@ -32,9 +32,31 @@
 .propriedade-item.expanded {
     background-color: #e0e0e0;
     min-height: 350px;
-    grid-column: span 2;
+   
 }
 
+/* Estilo dos nomes das propriedades */
+.propriedade-item h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+    color: #fff; /* Ajuste para melhor contraste */
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: capitalize;
+}
+
+/* Ícone de expansão */
+.expand-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    color: #555;
+    cursor: pointer;
+}
+
+/* Estilo para os detalhes dos talhões */
 .talhoes-detalhes {
     width: 100%;
     padding: 15px;
@@ -45,21 +67,47 @@
     color: #333;
 }
 
+/* Estilo para cada item de talhão */
 .talhao-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 7px;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 12px;
     background-color: #e0e0e0;
-    border-radius: 5px;
+    border-radius: 6px;
     transition: background-color 0.3s ease;
+    width: 90%;
+    color: #333;
+    cursor: pointer; /* Adicionado para indicar interatividade */
+
+    
+}
+
+.talhoes-detalhes {
+    width: 100%;
+    max-height: 200px; /* Altura fixa para rolagem */
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: left;
+    color: #333;
+    overflow-y: auto; /* Permite rolagem vertical */
+    overflow-x: hidden; /* Evitar rolagem horizontal */
+    box-sizing: border-box;
 }
 
 .talhao-item:hover {
     background-color: #b0b0b0;
 }
 
+.talhao-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Ícone de edição nos talhões */
 .edit-icon {
     font-size: 16px;
     cursor: pointer;
@@ -67,35 +115,31 @@
     color: gray;
 }
 
-.save-btn {
-    background-color: #4a5a40;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.save-btn:hover {
-    background-color: #3b4b34;
-}
-
+/* Modo de edição */
 .edit-mode .edit-input {
     margin: 10px 0;
-    padding: 8px;
-    border: 1px solid #ccc;
+    padding: 10px;
+    border: 1px solid #8a0b0b;
     border-radius: 5px;
     width: 90%;
+}
+
+.talhao-item input {
+    width: 45%;
+    padding: 9px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 /* Estilo para o formulário de edição */
 .edit-property-form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espaçamento entre os campos */
-    width: 100%; /* Para ocupar toda a largura disponível */
-    align-items: flex-start; /* Alinhar os elementos à esquerda */
+    gap: 10px;
+    width: 100%;
+    align-items: flex-start;
     margin-top: 20px;
 }
 
@@ -103,12 +147,12 @@
 .edit-property-form label {
     font-size: 14px;
     color: #444;
-    margin-bottom: 5px; /* Espaço entre o rótulo e o campo */
+    margin-bottom: 5px;
 }
 
 /* Estilo para os campos de input durante a edição */
 .edit-property-form input {
-    width: 100%; /* Faz o input ocupar toda a largura disponível */
+    width: 100%;
     padding: 8px;
     font-size: 14px;
     border-radius: 5px;
@@ -120,11 +164,13 @@
 .save-btn {
     background-color: #5F6F52;
     color: white;
-    padding: 8px 16px;
+    padding: 12px 24px;
+    font-size: 13px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-right: 10px;
+    margin-top: 10px;
     transition: background-color 0.3s ease;
 }
 
@@ -133,38 +179,37 @@
 }
 
 .cancel-btn {
-    background-color: #e74c3c;
+    background-color: #7e7b7b;
     color: white;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    margin-top: 10px;
     transition: background-color 0.3s ease;
-    margin-left: 0; 
-    margin-top: 10px; 
 }
 
 .cancel-btn:hover {
-    background-color: #c0392b;
+    background-color: #91291e;
 }
 
-/* botao de deletar talhao */
+/* Botão de deletar talhão */
 .delete-btn {
-    background-color: #ff4d4d;
+    background-color: #740606;
     color: white;
     padding: 8px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     margin-left: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .delete-btn:hover {
     background-color: #e60000;
 }
 
-
+/* Ícone de deletar propriedade */
 .delete-icon-property {
     margin-top: 20px;
     align-items: center;
@@ -173,7 +218,7 @@
     color: #ff4d4d;
 }
 
-/* Popup de confirmação */
+/* Popup de confirmação para deletar */
 .delete-popup-overlay {
     position: fixed;
     top: 0;
@@ -195,6 +240,7 @@
     text-align: center;
 }
 
+/* Botão de confirmação */
 .confirm-btn {
     background-color: #34a853;
     color: white;
@@ -202,25 +248,262 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     margin-right: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .confirm-btn:hover {
     background-color: #2c8e44;
 }
 
-.cancel-btn {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
+/* Estilo geral dos botões de ação */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+/* Ícone de deletar */
+.delete-icon {
+    margin-top: 18px;
+    font-size: 22px;
     cursor: pointer;
+    color: #ff4d4d;
+    transition: color 0.3s ease;
+}
+
+.delete-icon:hover {
+    color: #e60000;
+}
+
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+
+    /* Mantém o tamanho fixo do bloco da propriedade, mesmo expandido */
+    .propriedade-item {
+        height: 250px;
+        overflow: hidden;
+        transition: height 0.3s ease;
+    }
+
+    /* Propriedade expandida, revela o conteúdo */
+    .propriedade-item.expanded {
+        height: 350px;
+    }
+
+    /* Para o conteúdo extra (detalhes da propriedade) */
+    .talhoes-detalhes {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Exibe o conteúdo extra quando expandido */
+    .propriedade-item.expanded .talhoes-detalhes {
+        max-height: 200px;
+        opacity: 1;
+    }
+
+    /* Ajusta o item do talhão */
+    .talhoes-detalhes {
+        width: 100%;
+        max-height: 200px; /* Altura fixa para permitir rolagem vertical */
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: left;
+        color: #333;
+        overflow-y: auto; /* Rolagem vertical */
+        overflow-x: hidden; /* Evitar rolagem horizontal */
+    }
+    
+    /* Itens de talhão dentro do bloco */
+    .talhao-item {
+        padding: 12px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        color: #333;
+        transition: background-color 0.3s ease;
+        width: 100%; /* Mantém o item ocupando toda a largura */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer; /* Indica interatividade */
+    }
+    
+    /* Para rolagem horizontal se for o caso */
+    .talhoes-detalhes-horizontal {
+        display: flex;
+        overflow-x: auto; /* Rolagem horizontal */
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    /* Itens para rolagem horizontal */
+    .talhao-item-horizontal {
+        min-width: 200px; /* Tamanho mínimo para rolagem horizontal */
+        padding: 10px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .talhoes-detalhes-horizontal {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto; /* Rolagem horizontal */
+        padding: 10px;
+        gap: 10px; /* Espaçamento entre os itens */
+    }
+
+    @media (max-width: 480px) {
+        .propriedade-item {
+            padding: 20px;
+            height: auto; /* Garantir que o bloco se ajuste ao conteúdo */
+        }
+        
+        .talhao-item {
+            padding: 10px;
+            font-size: 14px; /* Reduzir tamanho da fonte para melhor ajuste */
+            width: 100%; /* Garante que os itens ocupem toda a largura */
+        }
+        
+        .talhoes-detalhes {
+            max-height: 150px; /* Altura reduzida para pequenas telas */
+            overflow-y: auto;
+        }
+    }
+    
+    
+
+    .talhao-item input,
+    .talhao-item .save-btn,
+    .talhao-item .cancel-btn {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+
+    /* Estilo do Modal de Edição do Talhão */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo mais escuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); /* Sombras mais suaves */
+    width: 90%;
+    max-width: 400px;
+    margin: 10px; /* Garantir espaço nas bordas */
+    text-align: center;
+    position: relative;
+}
+
+.modal-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px 0px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.modal-content .action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-content .save-btn, 
+.modal-content .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
     transition: background-color 0.3s ease;
 }
 
-.cancel-btn:hover {
-    background-color: #cc3333;
+.modal-content .save-btn {
+    background-color: #5F6F52;
+    color: white;
 }
- 
+
+.modal-content .save-btn:hover {
+    background-color: #4a5a40;
+}
+
+.modal-content .cancel-btn {
+    background-color: #e60000;
+    color: white;
+}
+
+.modal-content .cancel-btn:hover {
+    background-color: #b80000;
+}
+
+/* Garantir espaçamento em telas pequenas */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%; /* O modal ocupa 95% da tela, deixando espaço nas bordas */
+        max-width: 380px;
+        margin: 20px; /* Espaço em volta do modal */
+    }
+}
+
+/* Responsividade para o modal: apenas em telas menores */
+@media (min-width: 769px) {
+    .modal-overlay {
+        display: none; /* Ocultar o modal em telas maiores */
+    }
+}
+
+    /* Ajusta os botões e ícones */
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-buttons .save-btn,
+    .action-buttons .cancel-btn,
+    .action-buttons .delete-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Garante que o texto quebre linha se necessário */
+    h3, h4, p {
+        word-wrap: break-word;
+    }
+
+    /* Ajuste para o botão de minimizar */
+    .expand-icon {
+        font-size: 20px;
+        color: #333;
+    }
+
+    .expand-icon:hover {
+        color: #000;
+    }
+}

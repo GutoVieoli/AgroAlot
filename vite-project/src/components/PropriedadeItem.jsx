@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import './PropriedadeItem.css';
 
 const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedadeClick }) => {
-    // Estados locais para controlar a edição e a expansão
     const [editMode, setEditMode] = useState(false); 
     const [expanded, setExpanded] = useState(false);
     const [editedNome, setEditedNome] = useState(propriedade.nome); 
@@ -13,15 +12,15 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         propriedade.talhoes.map(talhao => ({ ...talhao, edit: false, editedNome: talhao.nome })) 
     );
     const [showDeletePopup, setShowDeletePopup] = useState(false); 
+    const [showTalhaoEditModal, setShowTalhaoEditModal] = useState(false); // Estado do modal de edição do talhão
+    const [talhaoToEdit, setTalhaoToEdit] = useState(null); // Talhão sendo editado no modal
     const itemRef = useRef(null); 
 
-    // modo de edicao
     const handleEditClick = (e) => {
         e.stopPropagation(); 
         setEditMode(true); 
     };
 
-  
     const handleOutsideClick = (e) => {
         if (itemRef.current && !itemRef.current.contains(e.target)) {
             setEditMode(false); 
@@ -31,7 +30,6 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         }
     };
 
-    
     useEffect(() => {
         document.addEventListener('mousedown', handleOutsideClick);
         return () => {
@@ -39,52 +37,59 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
         };
     }, [talhoesEdit]);
 
-    // funcao pra salvar as alteracoes do nome e localizacao
     const handleSaveClick = () => {
         console.log('Salvando alterações da propriedade:', editedNome, editedLocalizacao);
-        
         setEditMode(false);
     };
 
-
     const handleTalhaoEditClick = (id) => {
-        setTalhoesEdit(talhoesEdit.map(talhao =>
-            talhao.id === id ? { ...talhao, edit: true } : talhao 
-        ));
+        if (window.innerWidth <= 768) { 
+            // Exibe o modal em telas menores (mobile)
+            setTalhaoToEdit(talhoesEdit.find(talhao => talhao.id === id)); 
+            setShowTalhaoEditModal(true); 
+        } else {
+            // Ativa o modo de edição inline em telas maiores (desktop)
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === id ? { ...talhao, edit: true } : talhao 
+            ));
+        }
     };
 
-    // funcao pra salvar o nome do talhao
     const handleTalhaoSaveClick = (id) => {
-        console.log('Salvando alterações do talhão:', talhoesEdit.find(talhao => talhao.id === id));
-        
-        setTalhoesEdit(talhoesEdit.map(talhao =>
-            talhao.id === id ? { ...talhao, edit: false } : talhao 
-        ));
+        if (window.innerWidth <= 768) { 
+            // Fechar o modal em telas menores
+            console.log('Salvando alterações do talhão:', talhaoToEdit);
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === talhaoToEdit.id ? { ...talhaoToEdit, edit: false } : talhao 
+            ));
+            setShowTalhaoEditModal(false);
+        } else {
+            // Fechar o modo de edição inline em telas maiores
+            console.log('Salvando alterações do talhão:', talhoesEdit.find(talhao => talhao.id === id));
+            setTalhoesEdit(talhoesEdit.map(talhao =>
+                talhao.id === id ? { ...talhao, edit: false } : talhao 
+            ));
+        }
     };
 
-    // funcao pra alterar nome do talhao
     const handleTalhaoNomeChange = (id, newNome) => {
         setTalhoesEdit(talhoesEdit.map(talhao =>
-            talhao.id === id ? { ...talhao, editedNome: newNome } : talhao // atualiza o local o nome do talhao 
+            talhao.id === id ? { ...talhao, editedNome: newNome } : talhao 
         ));
     };
 
-    
     const toggleExpand = () => {
         setExpanded(!expanded); 
     };
 
-    // 
     const handleExpandClick = (e) => {
         e.stopPropagation();
         setExpanded(false); 
         setEditMode(false); 
     };
 
-    // funcao pra excluir  propriedade 
     const handleDeleteClick = () => {
         console.log('Excluindo propriedade:', propriedade.id);
-        
         setShowDeletePopup(false); 
     };
 
@@ -94,7 +99,6 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
             className={`propriedade-item ${expanded ? 'expanded' : ''}`} 
             onClick={() => !expanded && toggleExpand()} 
         >
-            {/*  edicao para o nome e localizacao  */}
             {editMode ? (
                 <div className="edit-property-form">
                     <label htmlFor={`nome-propriedade-${propriedade.id}`}>Nome da Propriedade</label>
@@ -104,7 +108,6 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                         value={editedNome} 
                         onChange={(e) => setEditedNome(e.target.value)} 
                     />
-        
                     <label htmlFor={`localizacao-propriedade-${propriedade.id}`}>Localização</label>
                     <input 
                         id={`localizacao-propriedade-${propriedade.id}`}
@@ -112,9 +115,10 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                         value={editedLocalizacao} 
                         onChange={(e) => setEditedLocalizacao(e.target.value)} 
                     />
-        
-                    <button onClick={handleSaveClick} className="save-btn">Salvar</button> {/* btao de salvar */}
-                    <button onClick={() => setEditMode(false)} className="cancel-btn">Cancelar</button> {/* botao de cancelar */}
+                    <div className="action-buttons">
+                        <button onClick={handleSaveClick} className="save-btn">Salvar</button>
+                        <button onClick={() => setEditMode(false)} className="cancel-btn">Cancelar</button>
+                    </div>
                 </div>
             ) : (
                 <>
@@ -135,25 +139,25 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                                                 onChange={(e) => handleTalhaoNomeChange(talhao.id, e.target.value)}
                                                 className="edit-input"
                                             />
-                                            <button
-                                                onClick={() => handleTalhaoSaveClick(talhao.id)}
-                                                className="save-btn"
-                                            >
-                                                Salvar
-                                            </button>
-                                            <button
-                                                onClick={() => setTalhoesEdit(talhoesEdit.map(t => 
-                                                    t.id === talhao.id ? { ...t, edit: false } : t))}
-                                                className="cancel-btn"
-                                            >
-                                                Cancelar
-                                            </button>
-                                            <button
-                                                onClick={() => console.log(`Excluindo talhão ${talhao.id}`)} // aqui  conectar ao BD para excluir
-                                                className="delete-btn"
-                                            >
-                                                Excluir
-                                            </button>
+                                            <div className="action-buttons">
+                                                <button
+                                                    onClick={() => handleTalhaoSaveClick(talhao.id)}
+                                                    className="save-btn"
+                                                >
+                                                    Salvar
+                                                </button>
+                                                <button
+                                                    onClick={() => setTalhoesEdit(talhoesEdit.map(t => 
+                                                        t.id === talhao.id ? { ...t, edit: false } : t))}
+                                                    className="cancel-btn"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <FaTrashAlt
+                                                    onClick={() => console.log(`Excluindo talhão ${talhao.id}`)} 
+                                                    className="delete-icon"
+                                                />
+                                            </div>
                                         </>
                                     ) : (
                                         <>
@@ -175,37 +179,47 @@ const PropriedadeItem = ({ propriedade, propriedadeSelecionada, handlePropriedad
                     )}
                 </>
             )}
-
-            {/*lapisinho de edicao da propriedade */}
             {expanded && !editMode && (
                 <FaPencilAlt 
                     className="edit-icon-property" 
                     onClick={handleEditClick} 
                 />
             )}
-
-            
             {expanded && (
                 <div className="expand-icon" onClick={handleExpandClick}>
                     -
                 </div>
             )}
-
-            {/* icone excluir propriedade */}
             {expanded && !editMode && (
                 <FaTrashAlt
                     className="delete-icon-property"
-                    onClick={() => setShowDeletePopup(true)} // Exibe o pop-up de confirmação
+                    onClick={() => setShowDeletePopup(true)} 
                 />
             )}
-
-            {/* popup de confirmação de exclusao */}
             {showDeletePopup && (
                 <div className="delete-popup-overlay">
                     <div className="delete-popup">
                         <p>Tem certeza que deseja excluir esta propriedade?</p>
-                        <button onClick={handleDeleteClick} className="confirm-btn">Confirmar</button> {/* Confirma a exclusão */}
-                        <button onClick={() => setShowDeletePopup(false)} className="cancel-btn">Cancelar</button> {/* Cancela a exclusão */}
+                        <button onClick={handleDeleteClick} className="confirm-btn">Confirmar</button>
+                        <button onClick={() => setShowDeletePopup(false)} className="cancel-btn">Cancelar</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Edição do Talhão */}
+            {showTalhaoEditModal && talhaoToEdit && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Editar Talhão</h3>
+                        <input
+                            type="text"
+                            value={talhaoToEdit.editedNome}
+                            onChange={(e) => setTalhaoToEdit({ ...talhaoToEdit, editedNome: e.target.value })}
+                        />
+                        <div className="action-buttons">
+                            <button onClick={() => handleTalhaoSaveClick(talhaoToEdit.id)} className="save-btn">Salvar</button>
+                            <button onClick={() => setShowTalhaoEditModal(false)} className="cancel-btn">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             )}
