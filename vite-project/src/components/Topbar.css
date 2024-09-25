@@ -15,13 +15,13 @@ body {
 
 .topBar {
     background-color: var(--cor-principal);
-    height: 10vh;
-    width: 100%; /* Usa 100% para evitar overflow */
+    height: 10vh; /* Defina a altura real da sua top bar */
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px; /* Usa padding fixo em pixels */
-    box-sizing: border-box; /* Inclui padding na largura total */
+    padding: 0 16px;
+    box-sizing: border-box;
     border-radius: 0 0 25px 25px;
     box-shadow: 0px 7px 17px 1px rgba(0, 0, 0, 0.75);
     position: fixed;
