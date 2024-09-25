@@ -34,7 +34,7 @@ const Topbar = () => {
                 <Link to="/" className="linklogo">
                     <img className="logo" src={Logo} alt="Logotipo. Drone sobrevoando plantação" />
                 </Link>
-                <Profile />  
+                <Profile /> {/* Mantém o ícone de perfil dentro da Topbar */}
             </div>
             <Optionsbar buttonActive={buttonActive} />
         </div>

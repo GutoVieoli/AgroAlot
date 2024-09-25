@@ -2,22 +2,34 @@
     --cor-principal: #5F6F52;
 }
 
+.page-with-topbar {
+    padding-top: 10vh; /* Aplica espaçamento apenas nas páginas com a top bar */
+}
+
 body {
+    margin: 0; /* Remove margens desnecessárias em todas as páginas */
     background-color: #FEFAE0;
     background-image: linear-gradient(rgba(254, 250, 224, 0.91), rgba(254, 250, 224, 0.91)), url('../assets/backgoundHome.webp');
 }
 
+
 .topBar {
     background-color: var(--cor-principal);
     height: 10vh;
-    width: 96vw;
+    width: 100%; /* Usa 100% para evitar overflow */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2vw;
+    padding: 0 16px; /* Usa padding fixo em pixels */
+    box-sizing: border-box; /* Inclui padding na largura total */
     border-radius: 0 0 25px 25px;
     box-shadow: 0px 7px 17px 1px rgba(0, 0, 0, 0.75);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
 }
+
 
 .menu-opcao {
     cursor: pointer;
