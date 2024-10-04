@@ -60,7 +60,7 @@ const BlockedMap = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data, filtro })
+            body: JSON.stringify({ data, filtro, talhao_id : talhaoId, })
         })
             .then((response) => {
                 if (!response.ok) {

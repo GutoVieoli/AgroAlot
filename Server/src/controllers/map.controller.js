@@ -1,4 +1,5 @@
 const ee = require('@google/earthengine');
+const talhoes = require('../models/talhoes.model');
 
 
 const validaMap = (req, res, next) => {
@@ -58,10 +59,18 @@ const calcRGB = async (fil) => {
 const getMap = async (req, res) => {
     const dataRecebida = new Date(req.body.data);
     const dataModificada = new Date(dataRecebida);
+    const talhao_id = req.body.talhao_id;
+    
     dataModificada.setDate(dataModificada.getDate() - 5);
 
+    const mapaBd = await procuraGeoJson(talhao_id)
+    const jsonMapa = mapaBd['geojson_data']
+
+    const coordinates = jsonMapa.features[0].geometry.coordinates[0];
+    const aoi = ee.Geometry.Polygon(coordinates);
+
     const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR");
-    var fil = imageSentinel.filterDate( dataModificada, dataRecebida).median();
+    var fil = imageSentinel.filterBounds(aoi).filterDate( dataModificada, dataRecebida).median().clip(aoi);
   
     var customPalette = ['ff0000', 'ffff00', '008514' ];
   
@@ -74,7 +83,18 @@ const getMap = async (req, res) => {
         var filtro = await calcRGB(fil, customPalette)
 
 
+    console.log(coordinates)
     res.send(filtro)
+}
+
+const procuraGeoJson = async (talhao_id) => {
+
+    const busca = await talhoes.findOne( {
+        attributes: ['geojson_data'],
+        where: { id: talhao_id},
+    })
+
+    return busca
 }
 
 module.exports = { getMap, validaMap }
