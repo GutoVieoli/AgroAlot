@@ -4,6 +4,7 @@
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
+    
 }
 .areaBotoes {
     
@@ -12,6 +13,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    margin: 30px auto;
 }
 
 .dataFiltro {
