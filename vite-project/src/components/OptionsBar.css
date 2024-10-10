@@ -1,7 +1,7 @@
 .barra-opcoes {
     position: fixed;
     top: 10vh;
-    left: 0;
+    left: -15vw; 
     bottom: 0;
     width: 15vw;
     max-width: 250px;
@@ -12,19 +12,16 @@
     flex-direction: column;
     justify-content: flex-start;
     z-index: 5;
-    transition: all 0.3s ease;
+    transition: left 0.3s ease; /*  sanimacao pra a esquerda */
     overflow-y: auto;
 }
 
 .barra-opcoes.active {
-    width: 15vw;
-    max-width: 250px;
+    left: 0; 
 }
 
 .barra-opcoes.inactive {
-    width: 0;
-    padding: 0;
-    display: none;
+    left: -15vw; 
 }
 
 .opcoes {
@@ -108,49 +105,51 @@
 }
 
 
-
-
-/* Media Query para telas menores que 768px */
 @media (max-width: 768px) {
     .barra-opcoes {
-        width: 70vw; /* Aumenta a largura para 70% da tela */
-        max-width: none; /* Remove o limite máximo de largura */
+        width: 70vw; 
+        left: -70vw; 
+        transition: left 0.3s ease; 
     }
 
     .barra-opcoes.active {
-        width: 70vw;
+        left: 0; 
+    }
+
+    .barra-opcoes.inactive {
+        left: -70vw; 
     }
 
     .opcoes {
-        padding: 15px; /* Reduz o padding para caber melhor em telas pequenas */
+        padding: 15px; 
     }
 
     .opcao-item {
-        font-size: 1rem; /* Reduz o tamanho da fonte */
-        padding: 8px; /* Ajusta o padding */
+        font-size: 1rem; 
+        padding: 8px; 
     }
 
     .propriedade-nome {
-        font-size: 0.9rem; /* Reduz o tamanho da fonte */
-        padding: 5px 0; /* Ajusta o padding */
+        font-size: 0.9rem; 
+        padding: 5px 0; 
     }
 
     .talhao-nome {
-        font-size: 0.85rem; /* Reduz ainda mais para caber os talhões */
+        font-size: 0.85rem; 
         padding: 4px 0;
     }
 
     .seta {
-        padding: 2px; /* Reduz o padding da seta */
-        margin-left: 5px; /* Ajusta o espaçamento lateral */
-        margin-top: -1px; /* Ajusta a posição vertical */
+        padding: 2px; 
+        margin-left: 5px; 
+        margin-top: -1px; 
     }
 
     .lista-propriedades {
-        padding-left: 8px; /* Reduz o recuo para telas menores */
+        padding-left: 8px; 
     }
 
     .lista-talhoes {
-        padding-left: 12px; /* Ajusta o recuo dos talhões */
+        padding-left: 12px; 
     }
 }

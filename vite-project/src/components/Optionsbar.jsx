@@ -57,7 +57,7 @@ const Optionsbar = ({ buttonActive }) => {
     return (
         <div className={`barra-opcoes ${buttonActive ? "active" : "inactive"}`}>
             <div className="opcoes">
-                {/*seta da propriedade */}
+                {/* seta da propriedade */}
                 <div className="opcao-item" onClick={togglePropriedadesVisiveis}>
                     Propriedades
                     <span className={`seta ${propriedadesVisiveis ? 'down' : 'right'}`}></span>
