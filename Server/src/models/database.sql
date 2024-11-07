@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS ndvi (
     data DATE NOT NULL,
     valor DECIMAL(4, 2) NOT NULL,
     id_talhao INT,
+    cloud_percentage DECIMAL(4, 2),
     FOREIGN KEY (id_talhao) REFERENCES talhoes(id)
 );
 
