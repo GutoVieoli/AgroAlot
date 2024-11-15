@@ -21,6 +21,7 @@ const BlockedMap = () => {
 
     const [data, setData] = useState('');
     const [filtro, setFiltro] = useState('');
+    const [centralizacao, setCentralizacao] = useState(null);
     const [renderizacao, setRenderizacao] = useState('');
     const [erroInvalido, setErroInvalido] = useState('');
     const [dadosNDVI, setDadosNDVI] = useState([]);
@@ -113,6 +114,7 @@ const BlockedMap = () => {
             console.log(data)
             setNuvensAprox(data.nuvens)
             setDataImg(data.data)
+            setCentralizacao(data.centralizacao)
 
             setRenderizacao(data.filtro);
             setErroInvalido('');
@@ -215,7 +217,7 @@ const BlockedMap = () => {
                     className="dataFiltro"
                     type="date"
                     max={new Date().toISOString().split('T')[0]}
-                    min={"2022-11-01"}
+                    min={"2022-08-01"}
                     onChange={(e) => setData(e.target.value)}
                 />
 
@@ -251,7 +253,7 @@ const BlockedMap = () => {
                 <p className="textErro">{erroInvalido}</p> : null
             }
 
-            <Map renderizacao={renderizacao} />
+            <Map filtro={renderizacao} centralizacao={centralizacao} />
 
             {dadosNDVI.length > 0 && <GraficoNDVI dadosNDVI={dadosNDVI} />}
         </div>

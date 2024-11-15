@@ -5,7 +5,7 @@ const router = express.Router();
 router.use(express.json());
 
 
-router.post('/mapalivre', mapa.validaMap, mapa.getMap);
+router.post('/mapalivre', mapa.validaMap, mapa.getFreeMap);
 router.post('/mapatalhao', mapa.validaMap, mapa.getMap);
 
 

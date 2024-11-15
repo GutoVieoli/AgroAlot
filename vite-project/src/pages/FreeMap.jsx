@@ -9,6 +9,7 @@ const FreeMap = () => {
     const [filtro, setFiltro] = useState("")
     const [renderizacao, setRenderizacao] = useState("")
     const [erroInvalido, setErroInvalido] = useState("")
+    const [dataImg, setDataImg] = useState(null);
 
     const handleApply = () => {
         fetch("http://localhost:3000/requestMap/mapalivre", {
@@ -25,10 +26,12 @@ const FreeMap = () => {
                     throw new Error(`HTTP error! status: ${response.status}, message: ${error.message}`);
                 });
             }
-            return response.text()
+            return response.json()
         })
-        .then((mapid) => {
-            setRenderizacao(mapid)
+        .then((data) => {
+            setDataImg('')
+            setDataImg(data.data)
+            setRenderizacao(data.filtro)
             setErroInvalido()
         })
         .catch((error) => {
@@ -41,7 +44,13 @@ const FreeMap = () => {
         <Topbar />
         
         <div className='areaBotoes'>
-            <input className='dataFiltro' type="date"  onChange={(e) => setData(e.target.value)}/>
+            <input 
+                className='dataFiltro' 
+                type="date"  
+                max={new Date().toISOString().split('T')[0]}
+                min={"2022-08-01"}
+                onChange={(e) => setData(e.target.value)}
+            />
         
             <select className='tipoFiltro' onChange={(e) => setFiltro(e.target.value)} defaultValue="">
                 <option value="" disabled>Filtro</option>
@@ -54,9 +63,13 @@ const FreeMap = () => {
 
         </div>
         
+        { 
+                (dataImg !== null) ? 
+                <p className="textDate">Data da imagem: {dataImg}</p> : null
+        }
         { erroInvalido != '' ? <p className='textErro'>{ erroInvalido }</p> : null }
 
-        <Map renderizacao={renderizacao} />
+        <Map filtro={renderizacao} />
 
     </div>
     )
