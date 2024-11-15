@@ -24,7 +24,9 @@ async function getMostRecentCaptureDate(id_talhao) {
     }
 }
 
-async function getAllNDVIs(id_talhao) {
+const getAllNDVIs = async (requisicao, resposta) => {
+
+    const { id_talhao } = requisicao.params;
     try {
         const ndvis = await ndvi.findAll({
             order: [['capture_date', 'ASC']],
@@ -32,16 +34,16 @@ async function getAllNDVIs(id_talhao) {
             where: {
                 id_talhao
             }
-        }).then((propriedadesSalvas) => {
-            resposta.status(201).send({
-              propriedades: propriedadesSalvas
+        }).then((ndvisSalvos) => {
+            resposta.status(200).send({
+              ndvis: ndvisSalvos
             });
         })
         .catch(() => {
         resposta.status(500).send({ message: 'Ocorreu algum erro inesperado no servidor!' });
         });;
 
-        
+
     } catch (error) {
         console.error('Erro ao buscar NDVIs do talhao:', error);
         throw error; // Repassa o erro para ser tratado onde a função for chamada

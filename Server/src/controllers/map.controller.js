@@ -64,10 +64,10 @@ const getMap = async (req, res) => {
 
     last_date = await ndvi.getMostRecentCaptureDate(talhao_id)
     if (last_date == null)
-        last_date = new Date('2022-11-01');
+        last_date = new Date("2022-08-01");
     console.log(last_date)
 
-    await popularNDVI(talhao_id, last_date)
+    //await popularNDVI(talhao_id, last_date)
     
     dataModificada.setDate(dataModificada.getDate() - 5);
 
@@ -82,13 +82,16 @@ const getMap = async (req, res) => {
     var fil = ee.Image(colecao.first()).clip(aoi)
 
     var data = ee.Date(fil.get('system:time_start')).format('YYYY-MM-dd');
+    dataRetorno = null;
     
     // Avalia e imprime os valores
-    data.evaluate(function(dataValue, error) {
+    await data.evaluate(function(dataValue, error) {
         if (error) {
-        console.error('Erro ao obter a data:', error);
+            console.error('Erro ao obter a data:', error);
+            return false;
         } else {
-        console.log('Data de aquisição da imagem:', dataValue);
+            dataRetorno = dataValue;
+            console.log('Data de aquisição da imagem:', dataValue);
         }
     });
 
@@ -109,7 +112,6 @@ const getMap = async (req, res) => {
     const totalPixelsValue = await totalPixels.get('B4').getInfo();
     const cloudPixelsValue = await cloudPixels.get('MSK_CLDPRB').getInfo();
     porcentagemNuvensClipada = parseFloat( ( (cloudPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
-    console.log(porcentagemNuvensClipada)
 
   
     var customPalette = ['ff0000', 'ffff00', '008514' ];
@@ -122,17 +124,22 @@ const getMap = async (req, res) => {
     else
         var filtro = await calcRGB(fil, customPalette)
 
-    res.send(filtro)
+    res.send({
+        "data": dataRetorno,
+        "nuvens": porcentagemNuvensClipada,
+        "filtro": filtro
+    })
 }
 
 const popularNDVI = async (talhao_id, start_date) => {
 
     start_date = new Date(start_date)
+    //start_date = new Date("2022-08-01")
     start_date.setDate(start_date.getDate() + 1);
     start_date = start_date.toISOString().split('T')[0];
 
-    //const endDate = new Date().toISOString().split('T')[0];
-    const endDate = "2023-05-15"
+    const endDate = new Date().toISOString().split('T')[0];
+    //const endDate = "2022-11-15"
 
     if ( start_date > endDate )
         return true;
@@ -146,7 +153,7 @@ const popularNDVI = async (talhao_id, start_date) => {
     const aoi = ee.Geometry.Polygon(coordinates);
 
     // Captura todas as imagens entre as datas que tenham até X de cloud
-    const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
+    const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR");
     var colecao = imageSentinel.filterBounds(aoi)
                                 .filterDate( start_date, endDate)
                                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 70));
@@ -227,9 +234,11 @@ const popularNDVI = async (talhao_id, start_date) => {
             if (totalPixelsValue > 0) {
                 porcentagemNuvensClipada = parseFloat( ( (cloudPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
                 porcentagemSombrasClipada = parseFloat( ( (shadowPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
+                console.log('Data: '+ dataValue + ' . Sombras: '+ porcentagemSombrasClipada + " . Nuvens: " + porcentagemNuvensClipada)
 
-                if(porcentagemNuvensClipada < 10 && porcentagemSombrasClipada < 22){
+                if(porcentagemNuvensClipada < 8 && porcentagemSombrasClipada < 20){
                     const ndviMedio = meanNDVI.get('NDVI') ? await meanNDVI.get('NDVI').getInfo() : null;
+                    console.log("Ndvi: " + ndviMedio + "\n^^^ Ele de cima entrou ^^^\n")
                     const taxaDeNuvens = porcentagemNuvensClipada + (porcentagemSombrasClipada * 0.65)
                     dadosTripla.push([dataValue, ndviMedio.toFixed(3), parseFloat(taxaDeNuvens), talhao_id]);
                 }

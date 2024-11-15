@@ -13,11 +13,13 @@ const mapRoutes = require('./routes/map.routes');
 const usuariosRoutes = require('./routes/usuarios.routes');
 const propriedadesRoutes = require('./routes/propriedades.routes');
 const talhoesRoutes = require('./routes/tralhoes.routes');
+const ndviRoutes = require('./routes/ndvi.routes');
 
 app.use('/requestMap', mapRoutes.router);
 app.use('/', usuariosRoutes.router);
 app.use('/propriedades', propriedadesRoutes.router);
 app.use('/talhoes', talhoesRoutes.router);
+app.use('/ndvi', ndviRoutes.router);
 
 
 const port = process.env.PORT || 3000;
