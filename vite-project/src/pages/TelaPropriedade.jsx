@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Topbar from '../components/Topbar';
 import PropriedadeItem from '../components/PropriedadeItem';
 import './TelaPropriedade.css';
 
 const TelaPropriedade = () => {
+
+    const effectRan = useRef(false);
     const [propriedades, setPropriedades] = useState([]);
     const [propriedadeSelecionada, setPropriedadeSelecionada] = useState(null);
     const [adicionarPropriedade, setAdicionarPropriedade] = useState(false);
     const [novoNomePropriedade, setNovoNomePropriedade] = useState('');
     const [localizacaoPropriedade, setLocalizacaoPropriedade] = useState('');
-    const [descricaoPropriedade, setDescricaoPropriedade] = useState('');
     const navigate = useNavigate();
 
-    const usarDadosSimulados = true;
+    const usarDadosSimulados = false;
 
     useEffect(() => {
-        if (usarDadosSimulados) {
-            carregarDadosSimulados();
-        } else {
-            carregarPropriedadesDoBackend();
+        if (effectRan.current === false) {
+            if (usarDadosSimulados) {
+                carregarDadosSimulados();
+            } else {
+                carregarPropriedadesDoBackend();
+            }
+            effectRan.current = true;
         }
     }, []);
 
@@ -39,9 +43,41 @@ const TelaPropriedade = () => {
 
     const carregarPropriedadesDoBackend = async () => {
         try {
-            const response = await fetch('http://localhost:3000/propriedades'); 
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/listar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    tokenJWT
+                }),
+            });
             const data = await response.json();
-            setPropriedades(data);
+            const propriedadesSalvas = data.propriedades;
+
+            // Transforma os dados recebidos no formato desejado
+            const propriedadesTransformadas = propriedadesSalvas.map((propriedade, index) => {
+                return {
+                    id: propriedade.id,
+                    nome: propriedade.nome,
+                    localizacao: propriedade.localizacao,
+                    areaTotal: propriedade.area_total,
+
+                    talhoes: propriedade.talhoes.map( (talhao) => {
+                        return {
+                            id: talhao.id,
+                            nome: `Talhão ${talhao.nome}`,
+                            area: talhao.area
+                        }
+                    })
+
+                };
+            });
+    
+            setPropriedades(propriedadesTransformadas);
+            return propriedadesTransformadas; // Retorna o objeto transformado
+
         } catch (error) {
             console.error('Erro ao carregar propriedades:', error);
         }
@@ -69,21 +105,19 @@ const TelaPropriedade = () => {
         setLocalizacaoPropriedade(e.target.value);
     };
 
-    const handleDescricaoChange = (e) => {
-        setDescricaoPropriedade(e.target.value);
-    };
 
     const handleAdicionarPropriedade = async () => {
         try {
-            const response = await fetch('http://localhost:3000/propriedades', {
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/criar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    nome: novoNomePropriedade, 
+                    nome: novoNomePropriedade,
                     localizacao: localizacaoPropriedade,
-                    descricao: descricaoPropriedade
+                    tokenJWT
                 }),
             });
 
@@ -94,7 +128,6 @@ const TelaPropriedade = () => {
             // Reinicializa os campos e oculta o formulário de adicionar
             setNovoNomePropriedade('');
             setLocalizacaoPropriedade('');
-            setDescricaoPropriedade('');
             setAdicionarPropriedade(false);
             carregarPropriedadesDoBackend();
         } catch (error) {
@@ -122,7 +155,10 @@ const TelaPropriedade = () => {
                         onClick={handleAdicionarClick}
                     >
                         {adicionarPropriedade ? (
-                            <div className="adicionar-propriedade-detalhes" onClick={(e) => e.stopPropagation()}>
+                            <form 
+                            className="adicionar-propriedade-detalhes" 
+                            onClick={(e) => e.stopPropagation()}
+                            onSubmit={(e) => { e.preventDefault(); handleAdicionarPropriedade();}} >
                                 <button onClick={handleFecharAdicionar} className="fechar-adicionar">X</button>
                                 <input 
                                     type="text" 
@@ -130,6 +166,7 @@ const TelaPropriedade = () => {
                                     value={novoNomePropriedade}
                                     onChange={handleNomePropriedadeChange}
                                     className="input-propriedade"
+                                    required
                                 />
                                 <input 
                                     type="text" 
@@ -137,17 +174,12 @@ const TelaPropriedade = () => {
                                     value={localizacaoPropriedade}
                                     onChange={handleLocalizacaoChange}
                                     className="input-propriedade"
+                                    required
                                 />
-                                <textarea
-                                    placeholder="Descrição (opcional)"
-                                    value={descricaoPropriedade}
-                                    onChange={handleDescricaoChange}
-                                    className="input-descricao"
-                                />
-                                <button onClick={handleAdicionarPropriedade} className="botao-adicionar-propriedade">
+                                <button type='submit' className="botao-adicionar-propriedade">
                                     Adicionar Propriedade
                                 </button>
-                            </div>
+                            </form>
                         ) : (
                             <div className="add-icon">+</div>
                         )}

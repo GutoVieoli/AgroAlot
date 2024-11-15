@@ -1,47 +1,45 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-
-import Logo from '../assets/Logo.svg'
-import Perfil from '../assets/Perfil.svg'
-import './Topbar.css'
-import Optionsbar from './Optionsbar'
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import Logo from '../assets/Logo.svg';
+import './Topbar.css';
+import Optionsbar from './Optionsbar';
+import Profile from './Profile';  
 
 const Topbar = () => {
-    
     const [estadoMenu, setEstado] = useState(false);
     const [buttonActive, setButtonActive] = useState(false);
 
-    const exibirMenu = () => {
-        const botton = document.querySelector('.menu-opcao');
+    useEffect(() => {
+        // Ajusta o padding-top do body quando a top bar está presente
+        document.body.style.paddingTop = '10vh'; // Ajuste para a altura real da top bar
 
-        if(estadoMenu === false){
-            botton.classList.add('active');
-            setEstado(true);
-            setButtonActive(true);
-        } else {
-            botton.classList.remove('active');
-            setEstado(false);
-            setButtonActive(false);
-        }
-    }
+        return () => {
+            // Remove o padding-top quando o componente for desmontado
+            document.body.style.paddingTop = '0';
+        };
+    }, []);
+
+    const exibirMenu = () => {
+        setEstado(!estadoMenu);
+        setButtonActive(!buttonActive);
+    };
 
     return (
         <div>
-            <div className='topBar'>
-                <div onClick={exibirMenu} className="menu-opcao">
+            <div className="topBar">
+                <div onClick={exibirMenu} className={`menu-opcao ${estadoMenu ? 'active' : ''}`}>
                     <div className="line1"></div>
                     <div className="line2"></div>
                     <div className="line3"></div>
                 </div>
-                <Link to='/' class='linklogo'>
-                    <img className='logo' src={Logo} alt='Logotipo. Drone sobevoando plantação' />
+                <Link to="/" className="linklogo">
+                    <img className="logo" src={Logo} alt="Logotipo. Drone sobrevoando plantação" />
                 </Link>
-                <img className='perfil' src={Perfil} alt='Logotipo do perfil do usuario' />
+                <Profile />  
             </div>
             <Optionsbar buttonActive={buttonActive} />
-
         </div>
-    )
-}
+    );
+};
 
-export default Topbar
+export default Topbar;

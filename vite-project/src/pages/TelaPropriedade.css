@@ -1,41 +1,27 @@
+
+
+/* Container Principal */
 .tela-propriedade-container {
     padding: 20px;
     max-width: 1200px;
     margin: auto;
 }
 
+/* Lista de Propriedades */
 .propriedades-lista {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 30px;
 }
 
-/* Estilo dos nomes das propriedades */
-.propriedade-item h3 {
-    margin: 0;
-    text-align: center;
-    font-size: 24px; /* Ajuste no tamanho da fonte */
-    color: #333;
-    font-weight: 600;
-    letter-spacing: 1.2px; /* Espaçamento entre letras */
-    text-transform: capitalize; /* Primeira letra de cada palavra em maiúscula */
+/* Responsividade para Dispositivos Móveis */
+@media (max-width: 768px) {
+    .propriedades-lista {
+        grid-template-columns: 1fr;
+    }
 }
 
-
-/* Estilo do título "Propriedades Cadastradas" */
-.tela-propriedade-container h1 {
-    font-size: 32px; /* Tamanho da fonte */
-    color: #444;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 700; /* Peso maior na fonte */
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 10px;
-    letter-spacing: 1.5px; /* Espaçamento entre letras */
-    text-transform: uppercase; /* Tudo em maiúsculas para destaque */
-}
-
-/* Estilo para as caixas de propriedade */
+/* Itens de Propriedade */
 .propriedade-item {
     position: relative;
     padding: 30px;
@@ -49,12 +35,59 @@
     align-items: center;
     min-height: 250px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* Adicionado para controlar o conteúdo */
 }
 
 .propriedade-item.expanded {
     background-color: #e0e0e0;
     min-height: 350px;
-    grid-column: span 2;
+    overflow: visible; /* Permite scroll interno se necessário */
+}
+
+/* Aplicar grid-column: span 2; somente em telas maiores */
+@media (min-width: 769px) {
+    .propriedade-item.expanded {
+        grid-column: span 2;
+    }
+}
+
+/* Em telas pequenas, garantir que o item expandido ocupa apenas uma coluna */
+@media (max-width: 768px) {
+    .propriedade-item.expanded {
+        grid-column: span 1;
+        min-height: auto; /* Ajuste se o min-height causar problemas */
+    }
+}
+
+
+/* Título Principal */
+.tela-propriedade-container h1 {
+    font-size: 32px;
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+
+
+.propriedade-item.expanded {
+    background-color: #e0e0e0;
+    min-height: 350px;
+}
+
+.propriedade-item h3 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+    color: #2e2c2c; /* Ajuste para melhor contraste */
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: capitalize;
 }
 
 .expand-icon {
@@ -66,7 +99,7 @@
     cursor: pointer;
 }
 
-/* Estilo específico para a caixa de adicionar propriedade */
+/* Caixa de Adicionar Propriedade */
 .add-propriedade {
     background-color: #e0e0e0;
     border: 2px dashed #b0b0b0;
@@ -83,11 +116,38 @@
 }
 
 .add-propriedade.expanded {
-    min-height: 400px;
+    min-height: 250px;
     justify-content: flex-start;
 }
 
-/* Estilo para o conteúdo da caixa de adicionar propriedade */
+/* Ícone "+" Centralizado */
+.add-icon {
+    font-size: 48px;
+    color: #5F6F52;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Botão de Fechar "X" */
+.fechar-adicionar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 22px;
+    color: #7e0000; /* Ajuste para hexadecimal */
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.fechar-adicionar:hover {
+    color: #5F6F52;
+}
+
+/* Conteúdo da Caixa de Adicionar Propriedade */
 .adicionar-propriedade-detalhes {
     display: flex;
     flex-direction: column;
@@ -96,7 +156,8 @@
     padding-top: 40px;
 }
 
-.adicionar-propriedade-detalhes input, .adicionar-propriedade-detalhes textarea {
+.adicionar-propriedade-detalhes input,
+.adicionar-propriedade-detalhes textarea {
     width: 90%;
     padding: 12px;
     margin-bottom: 20px;
@@ -106,7 +167,7 @@
 }
 
 .input-descricao {
-    height: 80px; /* Tamanho da caixa de texto */
+    height: 80px;
 }
 
 .botao-adicionar-propriedade {
@@ -123,33 +184,7 @@
     background-color: #4a5a40;
 }
 
-/* Posicionamento do "+" no centro da caixa de adicionar propriedade */
-.add-icon {
-    font-size: 48px;
-    color: #5F6F52;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-/* Botão de fechar "X" */
-.fechar-adicionar {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.fechar-adicionar:hover {
-    color: #5F6F52;
-}
-
-/* Estilo para o talhão */
+/* Detalhes dos Talhões */
 .talhoes-detalhes {
     width: 100%;
     padding: 15px;
@@ -171,6 +206,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer; /* Adicionado para indicar interatividade */
 }
 
 .talhao-item:hover {

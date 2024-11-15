@@ -1,93 +1,125 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-*{
+* {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
 }
+
+.container-detalhes {
+    margin: 50px auto;
+    padding: 30px;
+    width: 95%;
+    max-width: 1600px;
+    background-color: #ebecf0; 
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px; 
+    margin-bottom: 30px; 
+    
+}
+
+/* .dadosPropriedade {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 15px; 
+    padding: 20px; 
+    color: #3e423a;
+    margin-bottom: 30px; 
+    background-color: #ebecf0;
+    border-radius: 30px; 
+
+    border: 1px solid #ccc;
+    width: 100%; 
+    max-width: 600px; 
+} */
 
 .dadosPropriedade{
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding-top: 17px;
+    margin-top: 30px;
     color: #3e423a;
 }
 
-.nome{
+.nome {
     font-size: 28px;
     font-weight: 600;
+    border-bottom: 1px solid #ccc; 
+    padding-bottom: 8px; 
+    display: inline-block; 
 }
 
-.sobre{
+.sobre {
     font-size: 24px;
     font-weight: 600;
 }
 
+
+
+
+
+
+
+/* Botões e filtros alinhados horizontalmente com o mapa */
 .areaBotoes {
-    
     width: 100%;
-    height: 90px;
+    height: auto;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly; 
     align-items: center;
+    margin-bottom: 20px;
 }
 
-.dataFiltro {
+.dataFiltro, .tipoFiltro, .aplicarFiltro, .talhaoDropdown {
     background-color: #B99470;
     color: white;
     height: 45px;
     border-radius: 10px;
-    padding: 0 10px;
     font-size: 16px;
     box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
-}
-::-webkit-calendar-picker-indicator{
-    background-color: #ffffff;
-    padding: 4px;
     cursor: pointer;
-    border-radius: 3px;
+    border: none;
+    padding: 0 10px;
 }
 
 .tipoFiltro {
-    background-color: #B99470;
-    color: white;
-    height: 45px;
-    width: 110px;
-    border-radius: 10px;
-    padding: 0 14px;
-    padding-right: 5px; /* Adicionado padding extra para a seta */
-    font-size: 16px;
-    box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
-    cursor: pointer; 
-
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="5" viewBox="0 0 10 5"><polygon points="0,0 10,0 5,5" fill="white"/></svg>');
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    background-size: 12px;
-    box-sizing: border-box; /* Inclui padding e borda na altura total */
+    width: 120px;
 }
-
 
 .aplicarFiltro {
-    background-color: #B99470;
-    color: white;
-    height: 45px;
-    border-radius: 10px;
-    padding: 0 28px;
-    font-size: 16px;
-    box-shadow: 3px 3px 10px 1px rgba(0,0,0,0.4);
-    cursor: pointer;
+    padding: 0 20px;
 }
 
-.textErro{
-    padding: 0px 0 10px 0;
+.textErro {
+    padding: 10px;
     text-align: center;
     font-weight: 600;
     font-size: 18px;
     color: #530000;
+}
+
+.textNuvem {
+    padding: 10px 35px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #530000;
+}
+
+.textDate {
+    padding: 5px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    color: #404b38;
+}
+
+/* Ajustes no dropdown de talhão */
+.talhaoDropdown {
+    width: 200px;
 }

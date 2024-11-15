@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './AddTalhaoPage.css';
 import Topbar from '../components/Topbar';
 
 const AddTalhaoPage = () => {
-    const [nomeTalhao, setNomeTalhao] = useState('');
     const [propriedade, setPropriedade] = useState('');
+    const [nomeTalhao, setNomeTalhao] = useState('');
     const [cultura, setCultura] = useState('');
     const [coordenadas, setCoordenadas] = useState(['', '', '']);
+    const [arquivo, setArquivo] = useState(null);
     const [modo, setModo] = useState('manual');
-    const [erroMsg, setErroMsg] = useState('');
+    const [erroMsg, setMsg] = useState('');
 
-    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);
+    const [propriedadesCadastradas, setPropriedadesCadastradas] = useState([]);  // Prpriedades para a escolha
+    const [recarregarPropriedades, setRecarregarPropriedades] = useState(false); // Estado para controle de recarga
     const [mostrarModal, setMostrarModal] = useState(false); // Controla a exibição do modal
     const [novaPropriedadeNome, setNovaPropriedadeNome] = useState('');
     const [novaPropriedadeLocalizacao, setNovaPropriedadeLocalizacao] = useState('');
-    const [novaPropriedadeDescricao, setNovaPropriedadeDescricao] = useState('');
 
     const culturas = [
         "Algodão",
@@ -30,16 +31,19 @@ const AddTalhaoPage = () => {
         "Trigo",
     ];
 
+    // Referência para o input de arquivo
+    const arquivoInputRef = useRef(null); 
+
     useEffect(() => {
         const fetchPropriedades = async () => {
             try {
-                const token = localStorage.getItem('tokenJWT');
+                const tokenJWT = localStorage.getItem('tokenJWT');
                 const response = await fetch('http://localhost:3000/propriedades/listar', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ jwt: token })
+                    body: JSON.stringify({ tokenJWT })
                 });
                 if (!response.ok) {
                     throw new Error('Erro ao buscar propriedades cadastradas.');
@@ -50,22 +54,13 @@ const AddTalhaoPage = () => {
 
             } catch (error) {
                 console.error('Erro ao buscar propriedades:', error);
-                setErroMsg('Erro ao carregar propriedades cadastradas.');
+                setMsg('Erro ao carregar propriedades cadastradas.');
             }
         };
 
         fetchPropriedades(); // Chama a função assim que o componente for montado
-    }, []);
+    }, [recarregarPropriedades]);
 
-
-    const handlePropriedadeChange = (e) => {
-        const valor = e.target.value;
-        setPropriedade(valor);
-
-        const novasSugestoes = propriedadesCadastradas.filter(propriedade => 
-            propriedade.toLowerCase().startsWith(valor.toLowerCase())
-        );
-    };
 
     const handleAddCoordenada = () => {
         setCoordenadas([...coordenadas, '']);
@@ -84,53 +79,70 @@ const AddTalhaoPage = () => {
         }
     };
 
-    const handleSubmitManual = (e) => {
+    const handleSubmitManual = async (e) => {
         e.preventDefault();
-
-        if (coordenadas.length < 3) {
-            setErroMsg("Você precisa adicionar pelo menos 3 pontos de coordenadas.");
-            return;
+        const tokenJWT = localStorage.getItem('tokenJWT');
+        const formData = new FormData();
+        
+        if(modo === 'manual'){
+            const formData = {
+                nome: nomeTalhao,
+                propriedade,
+                cultura,
+                coordenadas,
+            };
+        }
+        else if(modo === 'arquivo'){
+            formData.append('tokenJWT', tokenJWT)
+            formData.append('modo', modo);
+            formData.append('arquivo', arquivo); // Adiciona o arquivo
+            formData.append('nome', nomeTalhao); // Adiciona o nome do talhão
+            formData.append('propriedade', propriedade); // Adiciona a propriedade
+            formData.append('cultura', cultura); // Adiciona a cultura
         }
 
-        const dados = {
-            nome,
-            propriedade,
-            cultura,
-            coordenadas,
-        };
-
-        fetch('http://localhost:3000/novo-talhao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dados),
-        })
-        .then(response => {
+        try {
+            // Enviando a requisição para o servidor
+            const response = await fetch('http://localhost:3000/talhoes/cadastrar', {
+                method: 'POST',
+                headers: {
+                    // Não precisa definir 'Content-Type', o navegador faz isso automaticamente para FormData
+                    'Authorization': `Bearer ${tokenJWT}` // Passando o token no header
+                },
+                body: formData // O body é o FormData contendo o arquivo e os dados
+            });
+    
             if (!response.ok) {
-                return response.json().then((error) => {
-                    setErroMsg(error.message);
-                    throw new Error(`Erro HTTP! status: ${response.status}, message: ${error.message}`);
-                });
+                const error = await response.json();
+                setMsg(error.message);
+                return;
             }
-            return response.json();
-        })
-        .then(data => {
+    
+            const data = await response.json();
+    
+            // Limpar os campos após o sucesso
             setNomeTalhao('');
             setPropriedade('');
             setCultura('');
-            setCoordenadas(['', '', '']);
-            setErroMsg(''); 
-        })
-        .catch((error) => {
-            console.error('Erro:', error);
-        });
+            setArquivo(null); // Limpa o arquivo do estado
+            setMsg(data.message); // Limpar mensagem de erro
+
+            // Limpar o campo de upload de arquivo manualmente
+            if (arquivoInputRef.current) {
+                arquivoInputRef.current.value = ''; // Limpa o valor do input
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            setMsg('Erro ao adicionar o talhão.');
+        }
     };
+
 
     const handleAddPropriedade = async () => {
         // Função para enviar a nova propriedade ao backend
         try {
-            const response = await fetch('http://localhost:3000/propriedades', {
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/criar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,12 +150,16 @@ const AddTalhaoPage = () => {
                 body: JSON.stringify({
                     nome: novaPropriedadeNome,
                     localizacao: novaPropriedadeLocalizacao,
-                    descricao: novaPropriedadeDescricao
+                    tokenJWT
                 })
             });
 
             if (!response.ok) {
+                setMsg('Erro ao salvar a propriedade...')
                 throw new Error('Erro ao salvar a propriedade');
+            } else {
+                setMsg('Propriedade Salva com sucesso!')
+                setRecarregarPropriedades(prev => !prev); // Alterna o estado, causando a recarga das propriedades salvas
             }
 
             // Fechar o modal após salvar
@@ -186,8 +202,8 @@ const AddTalhaoPage = () => {
                         <select 
                             type="text" 
                             id="propriedade" 
+                            onChange={ (e) => setPropriedade(e.target.value)}
                             value={propriedade} 
-                            onChange={handlePropriedadeChange}
                             required 
                         >
                                 <option value="" disabled>
@@ -269,57 +285,49 @@ const AddTalhaoPage = () => {
 
                     {modo === 'arquivo' && (
                         <div className="form-group">
-                            <label htmlFor="arquivo">Arquivo (JSON ou GeoJSON)</label>
-                            <input type="file" id="arquivo" accept=".json,.geojson" required />
+                            <label htmlFor="arquivo">Arquivo (GeoJSON)</label>
+                            <input type="file" id="arquivo" accept=".geojson" ref={arquivoInputRef}
+                                onChange={ (e) => setArquivo(e.target.files[0])} required />
                         </div>
                     )}
                     <button type="submit" className="submit-btn">Adicionar Talhão</button>
 
-
-                    {/* Modal de Adicionar Propriedade */}
-                    {mostrarModal && (
-                        <div className="modal-overlay">
-                            <div className="modal">
-                                <h2>Adicionar Propriedade</h2>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeNome">Nome</label>
-                                    <input
-                                        type="text"
-                                        id="novaPropriedadeNome"
-                                        value={novaPropriedadeNome}
-                                        onChange={(e) => setNovaPropriedadeNome(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeLocalizacao">Localização</label>
-                                    <input
-                                        type="text"
-                                        id="novaPropriedadeLocalizacao"
-                                        value={novaPropriedadeLocalizacao}
-                                        onChange={(e) => setNovaPropriedadeLocalizacao(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="modal-form-group">
-                                    <label htmlFor="novaPropriedadeDescricao">Descrição (opcional)</label>
-                                    <textarea
-                                        id="novaPropriedadeDescricao"
-                                        value={novaPropriedadeDescricao}
-                                        onChange={(e) => setNovaPropriedadeDescricao(e.target.value)}
-                                    />
-                                </div>
-                                <button className="submit-btn" onClick={handleAddPropriedade}>
-                                    Adicionar Propriedade
-                                </button>
-                                <button className="close-btn" onClick={() => setMostrarModal(false)}>
-                                    Fechar
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                 </form>
+
+                {/* Modal de Adicionar Propriedade */}
+                {mostrarModal && (
+                    <form className="modal-overlay" onSubmit={(e) => { e.preventDefault(); handleAddPropriedade(); } }>
+                        <div className="modal">
+                            <h2>Adicionar Propriedade</h2>
+                            <div className="modal-form-group">
+                                <label htmlFor="novaPropriedadeNome">Nome</label>
+                                <input
+                                    type="text"
+                                    id="novaPropriedadeNome"
+                                    value={novaPropriedadeNome}
+                                    onChange={(e) => setNovaPropriedadeNome(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="modal-form-group">
+                                <label htmlFor="novaPropriedadeLocalizacao">Localização</label>
+                                <input
+                                    type="text"
+                                    id="novaPropriedadeLocalizacao"
+                                    value={novaPropriedadeLocalizacao}
+                                    onChange={(e) => setNovaPropriedadeLocalizacao(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <button className="submit-btn" type='submit'>
+                                Adicionar Propriedade
+                            </button>
+                            <button className="close-btn" type='button' onClick={() =>  setMostrarModal(false) }>
+                                Fechar
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
         </div>
     );

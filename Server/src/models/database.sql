@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
 CREATE TABLE IF NOT EXISTS propriedades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
+    localizacao VARCHAR(100) NOT NULL,
+    area_total DECIMAL(10, 2) DEFAULT 0,
     id_usuario VARCHAR(64) NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
 );
@@ -33,5 +34,39 @@ CREATE TABLE IF NOT EXISTS ndvi (
     data DATE NOT NULL,
     valor DECIMAL(4, 2) NOT NULL,
     id_talhao INT,
+    cloud_percentage DECIMAL(4, 2),
     FOREIGN KEY (id_talhao) REFERENCES talhoes(id)
 );
+
+
+DELIMITER //
+CREATE TRIGGER atualiza_area_total_apos_insert
+AFTER INSERT ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total + NEW.area
+    WHERE id = NEW.id_propriedade;
+END;
+
+CREATE TRIGGER atualiza_area_total_apos_delete
+AFTER DELETE ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total - OLD.area
+    WHERE id = OLD.id_propriedade;
+END;
+
+CREATE TRIGGER atualiza_area_total_apos_update
+AFTER UPDATE ON talhoes
+FOR EACH ROW
+BEGIN
+    UPDATE propriedades
+    SET area_total = area_total - OLD.area + NEW.area
+    WHERE id = NEW.id_propriedade;
+END;
+
+//
+
+DELIMITER ;

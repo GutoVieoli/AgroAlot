@@ -19,10 +19,12 @@ const Map = (filtro) => {
 
         // Create an interactive map inside the placeholder DOM element.
         const embeddedMap = new google.maps.Map(mapContainerEl, {
-            // Pan and zoom initial map viewport to Grand Canyon.
             center: { lng: -46.019918, lat: -21.211870 },
             zoom: 13,
             mapTypeId: google.maps.MapTypeId.TERRAIN ,
+
+            streetViewControl: false,
+            
         });
 
         if(mapid != null){

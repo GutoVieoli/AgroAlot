@@ -1,29 +1,40 @@
 :root {
     --cor-principal: #5F6F52;
 }
-  
-body {
-    background-color: #FEFAE0; 
-    background-image:linear-gradient(rgba(254, 250, 224, 0.91), rgba(254, 250, 224, 0.91)), url('../assets/backgoundHome.webp');
+
+.page-with-topbar {
+    padding-top: 10vh; /* Aplica espaçamento apenas nas páginas com a top bar */
 }
 
-.topBar{
-    background-color: var(--cor-principal);
-    height: 10vh;
-    width: 96vw;
+body {
+    margin: 0; /* Remove margens desnecessárias em todas as páginas */
+    background-color: #FEFAE0;
+    background-image: linear-gradient(rgba(254, 250, 224, 0.91), rgba(254, 250, 224, 0.91)), url('../assets/backgoundHome.webp');
+}
 
+
+.topBar {
+    background-color: var(--cor-principal);
+    height: 10vh; /* Defina a altura real da sua top bar */
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2vw 0 2vw;
-    border-radius: 0 0 25px 25px ;
-    box-shadow:  0px 7px 17px 1px rgba(0,0,0,0.75);
+    padding: 0 16px;
+    box-sizing: border-box;
+    border-radius: 0 0 25px 25px;
+    box-shadow: 0px 7px 17px 1px rgba(0, 0, 0, 0.75);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
 }
+
 
 .menu-opcao {
     cursor: pointer;
 }
-  
+
 .menu-opcao div {
     width: 40px;
     height: 3px;
@@ -35,12 +46,12 @@ body {
 
 .menu-opcao.active .line1 {
     transform: rotate(-45deg) translate(-9px, 9px);
-  }
-  
+}
+
 .menu-opcao.active .line2 {
     opacity: 0;
 }
-  
+
 .menu-opcao.active .line3 {
     transform: rotate(45deg) translate(-9px, -9px);
 }
@@ -52,9 +63,7 @@ body {
 }
 
 .logo {
-    height: 80%
+    height: 80%;
+    object-fit: contain;
 }
 
-.perfil {
-    height: 55%;
-}
