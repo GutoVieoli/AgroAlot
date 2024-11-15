@@ -57,6 +57,48 @@ const calcRGB = async (fil) => {
     })
 }
 
+const getFreeMap = async (req, res) => {
+    const dataRecebida = new Date(req.body.data);
+    const dataModificada = new Date(dataRecebida);
+
+    dataModificada.setDate(dataModificada.getDate() - 5);
+
+
+
+    const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
+    var colecao = imageSentinel.filterDate( dataModificada, dataRecebida).sort('CLOUDY_PIXEL_PERCENTAGE')
+    var fil = ee.Image(colecao.first())
+
+    var data = ee.Date(fil.get('system:time_start')).format('YYYY-MM-dd');
+    dataRetorno = null;
+    
+    // Avalia e imprime os valores
+    await data.evaluate(function(dataValue, error) {
+        if (error) {
+            console.error('Erro ao obter a data:', error);
+            return false;
+        } else {
+            dataRetorno = dataValue;
+            console.log('Data de aquisição da imagem:', dataValue);
+        }
+    });
+
+    var customPalette = ['ff0000', 'ffff00', '008514' ];
+  
+    const reqFiltro = req.body.filtro;
+    if(reqFiltro == 'NDVI')
+        var filtro = await calcNDVI(fil, customPalette)
+    else if(reqFiltro == 'NDRE')
+        var filtro = await calcNDRE(fil, customPalette)
+    else
+        var filtro = await calcRGB(fil, customPalette)
+
+    res.send({
+        "data": dataRetorno,
+        "filtro": filtro
+    })    
+}
+
 const getMap = async (req, res) => {
     const dataRecebida = new Date(req.body.data);
     const dataModificada = new Date(dataRecebida);
@@ -75,6 +117,8 @@ const getMap = async (req, res) => {
     const jsonMapa = mapaBd['geojson_data']
 
     const coordinates = jsonMapa.features[0].geometry.coordinates[0];
+    const centerArea = coordinates[2]
+
     const aoi = ee.Geometry.Polygon(coordinates);
 
     const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
@@ -127,7 +171,8 @@ const getMap = async (req, res) => {
     res.send({
         "data": dataRetorno,
         "nuvens": porcentagemNuvensClipada,
-        "filtro": filtro
+        "filtro": filtro,
+        "centralizacao": centerArea
     })
 }
 
@@ -266,4 +311,4 @@ const procuraGeoJson = async (talhao_id) => {
     return busca
 }
 
-module.exports = { getMap, validaMap }
+module.exports = { getMap, getFreeMap, validaMap }
