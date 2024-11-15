@@ -15,14 +15,45 @@ const BlockedMap = () => {
     const [talhao_nome, setTalhaoNome] = useState('');
     const [talhao_area, setTalhaoArea] = useState(0);
     const [talhao_cultura, setTalhaoCultura] = useState('');
+
     const [talhoes, setTalhoes] = useState([]);
-    const [talhaoSelecionado, setTalhaoSelecionado] = useState(null);
+    const [talhaoIdSelecionado, setTalhaoIdSelecionado] = useState(null);
 
     const [data, setData] = useState('');
     const [filtro, setFiltro] = useState('');
     const [renderizacao, setRenderizacao] = useState('');
     const [erroInvalido, setErroInvalido] = useState('');
     const [dadosNDVI, setDadosNDVI] = useState([]);
+
+    const [nuvensAprox, setNuvensAprox] = useState(null);
+    const [dataImg, setDataImg] = useState(null);
+
+    async function fetchDadosTalhao(propriedade_id, talhao_id) {
+        try {
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch('http://localhost:3000/propriedades/dados_talhao', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    propriedade_id,
+                    talhao_id,
+                    tokenJWT
+                }),
+            });
+
+            const data = await response.json()
+            setPropriedadeNome(data.data[0].nome);
+            setTalhaoNome(data.data[0].talhoes[0].nome);
+            setTalhaoArea(data.data[0].talhoes[0].area);
+            setTalhaoCultura(data.data[0].talhoes[0].cultura);
+
+            setTalhaoIdSelecionado(talhao_id)
+        } catch (error) {
+            console.error('Erro ao enviar dados:', error);
+        }
+    }
 
     useEffect(() => {
         async function fetchTalhoesDaPropriedade() {
@@ -46,22 +77,7 @@ const BlockedMap = () => {
                 );
 
                 if (propriedadeSelecionada) {
-                    setPropriedadeNome(propriedadeSelecionada.nome);
                     setTalhoes(propriedadeSelecionada.talhoes);
-
-                    // Define o talhão inicial
-                    const talhaoInicial = propriedadeSelecionada.talhoes.find(
-                        (talhao) => talhao.id === parseInt(talhaoIdParam)
-                    ) || propriedadeSelecionada.talhoes[0];
-
-                    if (talhaoInicial) {
-                        setTalhaoSelecionado(talhaoInicial.id);
-                        setTalhaoNome(talhaoInicial.nome);
-                        setTalhaoArea(talhaoInicial.area);
-                        setTalhaoCultura(talhaoInicial.cultura);
-                    } else {
-                        console.error('Talhão não encontrado');
-                    }
                 } else {
                     console.error('Propriedade não encontrada');
                 }
@@ -71,15 +87,16 @@ const BlockedMap = () => {
         }
 
         fetchTalhoesDaPropriedade();
+        fetchDadosTalhao(propriedadeId, talhaoIdParam);
     }, [propriedadeId, talhaoIdParam]);
 
     const handleApply = () => {
-        fetch('http://localhost:3000/requestMap/mapalivre', {
+        fetch('http://localhost:3000/requestMap/mapatalhao', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ data, filtro, talhao_id: talhaoSelecionado })
+            body: JSON.stringify({ data, filtro, talhao_id: talhaoIdSelecionado })
         })
         .then((response) => {
             if (!response.ok) {
@@ -90,93 +107,153 @@ const BlockedMap = () => {
                     );
                 });
             }
-            return response.text();
+            return response.json();
         })
-        .then((mapid) => {
-            setRenderizacao(mapid);
+        .then((data) => {
+            console.log(data)
+            setNuvensAprox(data.nuvens)
+            setDataImg(data.data)
+
+            setRenderizacao(data.filtro);
             setErroInvalido('');
-            // Aqui você pode preencher os dados de NDVI simulados
-            const dadosSimulados = [
-                { data: '2024-08-01', valor: 0.7 },
-                { data: '2024-08-02', valor: 0.6 },
-                { data: '2024-08-03', valor: 0.65 },
-                { data: '2024-08-04', valor: 0.7 }
-            ];
-            setDadosNDVI(dadosSimulados);
+
+            handleNDVI()
         })
         .catch((error) => {
             console.error('Error:', error);
         });
     };
 
+
+    const handleNDVI = () => {
+        fetch(`http://localhost:3000/ndvi/historico/${talhaoIdSelecionado}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((error) => {
+                    setErroInvalido(error.message);
+                    throw new Error(
+                        `HTTP error! status: ${response.status}, message: ${error.message}`
+                    );
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data)
+            // setNuvensAprox(data.nuvens)
+            // setDataImg(data.data)
+
+            // setRenderizacao(data.filtro);
+            // setErroInvalido('');
+            // // Aqui você pode preencher os dados de NDVI simulados
+            // const dadosSimulados = [
+            //     { data: '2024-08-01', valor: 0.7 },
+            //     { data: '2024-08-02', valor: 0.6 },
+            //     { data: '2024-08-03', valor: 0.65 },
+            //     { data: '2024-08-04', valor: 0.7 }
+            // ];
+            if (data.ndvis && Array.isArray(data.ndvis)) {
+
+                const dadosConvertidos = data.ndvis.map(item => ({
+                    ...item,
+                    valor: Number(item.valor),
+                    cloud_percentage: Number(item.cloud_percentage),
+                    capture_date: item.capture_date,
+                }));
+                setDadosNDVI(dadosConvertidos);
+            } else {
+                setErro('Formato de dados inesperado');
+            }
+            
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    };
+
+
+
     const handleChangeTalhao = (e) => {
-        const talhaoIdSelecionado = e.target.value;
-        const talhao = talhoes.find(t => t.id === parseInt(talhaoIdSelecionado));
+        setTalhaoIdSelecionado(e.target.value);
 
-        if (talhao) {
-            setTalhaoNome(talhao.nome);
-            setTalhaoArea(talhao.area);
-            setTalhaoCultura(talhao.cultura);
-            setTalhaoSelecionado(talhao.id);
-
-            // Opcional: Resetar outros estados se necessário
-            setRenderizacao('');
-            setDadosNDVI([]);
-        }
+        fetchDadosTalhao(propriedadeId, e.target.value);
     };
 
     return (
         <div>
             <Topbar />
-            <div className="container-detalhes maior-container">
-                <div className="dadosPropriedade">
-                    <h1 className="nome">{propriedade_nome} - Talhão "{talhao_nome}"</h1>
-                    <h2 className="sobre">{talhao_area} ha - {talhao_cultura}</h2>
-                </div>
 
-                <div className="areaBotoes">
-                    <input
-                        className="dataFiltro"
-                        type="date"
-                        onChange={(e) => setData(e.target.value)}
-                    />
+            <div className="dadosPropriedade">
+                <h1 className="nome">{propriedade_nome} - Talhão "{talhao_nome}"</h1>
+                <h2 className="sobre">{talhao_area} ha - {talhao_cultura}</h2>
+            </div>
 
-                    <select
-                        className="tipoFiltro"
-                        onChange={(e) => setFiltro(e.target.value)}
-                        defaultValue=""
-                    >
-                        <option value="" disabled>
-                            Filtro
-                        </option>
-                        <option value="NDVI">NDVI</option>
-                        <option value="NDRE">NDRE</option>
-                        <option value="RGB">RGB</option>
-                    </select>
-
-                    <button className="aplicarFiltro" onClick={handleApply}>
-                        APLICAR
-                    </button>
-
-                    <select className="talhaoDropdown" onChange={handleChangeTalhao} value={talhaoSelecionado || ''}>
-                        {talhoes.length > 0 ? (
-                            talhoes.map((talhao) => (
+            <div className="areaBotoes">
+                <select className="talhaoDropdown" onChange={handleChangeTalhao} value={talhaoIdSelecionado || ''}>
+                    <option key={talhaoIdParam} value={talhaoIdParam}>
+                        {talhao_nome} - {talhao_area} ha
+                    </option>
+                    {talhoes.length > 0 ? (
+                        talhoes.map((talhao) => (
+                            talhao.nome != talhao_nome ?
                                 <option key={talhao.id} value={talhao.id}>
                                     {talhao.nome} - {talhao.area} ha
                                 </option>
-                            ))
-                        ) : (
-                            <option disabled>Nenhum talhão disponível</option>
-                        )}
-                    </select>
-                </div>
+                            : null
+                        ))
+                    ) : (
+                        <option disabled>Nenhum talhão disponível</option>
+                    )}
+                </select>
 
-                {erroInvalido !== '' ? <p className="textErro">{erroInvalido}</p> : null}
+                <input
+                    className="dataFiltro"
+                    type="date"
+                    max={new Date().toISOString().split('T')[0]}
+                    min={"2022-11-01"}
+                    onChange={(e) => setData(e.target.value)}
+                />
 
-                <Map renderizacao={renderizacao} />
+                <select
+                    className="tipoFiltro"
+                    onChange={(e) => setFiltro(e.target.value)}
+                    defaultValue=""
+                >
+                    <option value="" disabled>
+                        Filtro
+                    </option>
+                    <option value="NDVI">NDVI</option>
+                    <option value="NDRE">NDRE</option>
+                    <option value="RGB">RGB</option>
+                </select>
 
-                {dadosNDVI.length > 0 && <GraficoNDVI dadosNDVI={dadosNDVI} />}
+                <button className="aplicarFiltro" onClick={handleApply}>
+                    APLICAR
+                </button>
+
             </div>
+
+            {
+                (nuvensAprox !== null && nuvensAprox >= 10) ?
+                <p className="textNuvem">Pode haver distorções na imagem devido a quantidade de nuvens na área. Aproximadamente {nuvensAprox}%</p> : null
+            }
+            { 
+                (dataImg !== null &&  nuvensAprox !== null) ? 
+                <p className="textDate">Data da imagem: {dataImg}</p> : null
+            }
+            {
+                erroInvalido !== '' ? 
+                <p className="textErro">{erroInvalido}</p> : null
+            }
+
+            <Map renderizacao={renderizacao} />
+
+            {dadosNDVI.length > 0 && <GraficoNDVI dadosNDVI={dadosNDVI} />}
         </div>
     );
 };

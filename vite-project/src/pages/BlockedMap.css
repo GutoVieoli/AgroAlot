@@ -21,7 +21,7 @@
     
 }
 
-.dadosPropriedade {
+/* .dadosPropriedade {
     display: flex;
     flex-direction: column;
     align-items: flex-start; 
@@ -35,6 +35,15 @@
     border: 1px solid #ccc;
     width: 100%; 
     max-width: 600px; 
+} */
+
+.dadosPropriedade{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 30px;
+    color: #3e423a;
 }
 
 .nome {
@@ -94,9 +103,23 @@
     color: #530000;
 }
 
+.textNuvem {
+    padding: 10px 35px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #530000;
+}
+
+.textDate {
+    padding: 5px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 20px;
+    color: #404b38;
+}
+
 /* Ajustes no dropdown de talhão */
 .talhaoDropdown {
     width: 200px;
-    background-color: #B99470;
-    border-radius: 10px;
 }
