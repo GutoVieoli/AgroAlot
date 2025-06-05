@@ -7,6 +7,7 @@ router.use(express.json());
 
 router.post('/mapalivre', mapa.validaMap, mapa.getFreeMap);
 router.post('/mapatalhao', mapa.validaMap, mapa.getMap);
+router.post('/popularNDVI/:talhao_id', mapa.popularNDVI);
 
 
 module.exports = {

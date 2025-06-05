@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Map from '../components/Map';
 import Topbar from '../components/Topbar';
 import GraficoNDVI from '../components/GraficoNDVI';
+import NDVIReport from '../components/NDVIReport';
 import './BlockedMap.css';
 
 const BlockedMap = () => {
@@ -28,6 +29,9 @@ const BlockedMap = () => {
 
     const [nuvensAprox, setNuvensAprox] = useState(null);
     const [dataImg, setDataImg] = useState(null);
+
+    const [grafico64Geral, setGrafico64Geral] = useState()
+    const [grafico64Normalizado, setGrafico64Normalizado] = useState()
 
     async function fetchDadosTalhao(propriedade_id, talhao_id) {
         try {
@@ -56,6 +60,23 @@ const BlockedMap = () => {
         }
     }
 
+    async function fetchPopularNDVI(talhao_id) {
+        try {
+            const tokenJWT = localStorage.getItem('tokenJWT');
+            const response = await fetch(`http://localhost:3000/requestMap/popularNDVI/${talhao_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    tokenJWT
+                }),
+            });
+            console.log(response)
+        } catch (error) {
+            console.error('Erro ao popular NDVI:', error);
+        }
+    }
     useEffect(() => {
         async function fetchTalhoesDaPropriedade() {
             try {
@@ -86,9 +107,11 @@ const BlockedMap = () => {
                 console.error('Erro ao carregar propriedades:', error);
             }
         }
+        
 
         fetchTalhoesDaPropriedade();
         fetchDadosTalhao(propriedadeId, talhaoIdParam);
+        fetchPopularNDVI(talhaoIdParam);
     }, [propriedadeId, talhaoIdParam]);
 
     const handleApply = () => {
@@ -147,18 +170,7 @@ const BlockedMap = () => {
         })
         .then((data) => {
             console.log(data)
-            // setNuvensAprox(data.nuvens)
-            // setDataImg(data.data)
 
-            // setRenderizacao(data.filtro);
-            // setErroInvalido('');
-            // // Aqui você pode preencher os dados de NDVI simulados
-            // const dadosSimulados = [
-            //     { data: '2024-08-01', valor: 0.7 },
-            //     { data: '2024-08-02', valor: 0.6 },
-            //     { data: '2024-08-03', valor: 0.65 },
-            //     { data: '2024-08-04', valor: 0.7 }
-            // ];
             if (data.ndvis && Array.isArray(data.ndvis)) {
 
                 const dadosConvertidos = data.ndvis.map(item => ({
@@ -185,6 +197,7 @@ const BlockedMap = () => {
 
         fetchDadosTalhao(propriedadeId, e.target.value);
     };
+
 
     return (
         <div>
@@ -230,7 +243,6 @@ const BlockedMap = () => {
                         Filtro
                     </option>
                     <option value="NDVI">NDVI</option>
-                    <option value="NDRE">NDRE</option>
                     <option value="RGB">RGB</option>
                 </select>
 
@@ -255,7 +267,53 @@ const BlockedMap = () => {
 
             <Map filtro={renderizacao} centralizacao={centralizacao} />
 
-            {dadosNDVI.length > 0 && <GraficoNDVI dadosNDVI={dadosNDVI} />}
+
+            {dadosNDVI.length > 0 && (
+                <>
+                    <GraficoNDVI 
+                        dadosNDVI={dadosNDVI} 
+                        qtdDiasLacunas={20} 
+                        tituloGrafico={"Série temporal de NDVI"}    
+                        setGrafico64={setGrafico64Geral}
+                    />
+
+                    <GraficoNDVI
+                        qtdDiasLacunas={45}
+                        tituloGrafico={"NDVI médio mensal"} 
+                        setGrafico64={setGrafico64Normalizado}  
+                        dadosNDVI={Object.entries(
+                            dadosNDVI.reduce((acc, cur) => {
+                            const mesAno = cur.capture_date.slice(0, 7); // 'YYYY-MM'
+                            if (!acc[mesAno]) acc[mesAno] = [];
+                            acc[mesAno].push(cur.valor);
+                            return acc;
+                            }, {})
+                        ).map(([mes, valores]) => ({
+                            capture_date: mes + '-01',
+                            valor: valores.reduce((a, b) => a + b, 0) / valores.length,
+                        }))}
+                    />
+                    
+                </>
+            )}
+
+            <NDVIReport
+            dados={{
+                proprietario: "Manoel Oliveira",
+                propriedade: propriedade_nome,
+                talhao: talhao_nome,
+                area: talhao_area,
+                cultura: talhao_cultura,
+                nome_engenheiro: 'Augusto Oliveira',
+                crea_engenheiro: 'MG123456',
+                graficoNDVICompleto: grafico64Geral,
+                graficoNDVIMensal: grafico64Normalizado,
+                conclusoes: 'A lavoura apresentou desenvolvimento satisfatório no período seco...',
+                dadosNDVI: dadosNDVI,
+                centralizacao: centralizacao
+            }}
+            />
+            
         </div>
     );
 };

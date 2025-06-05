@@ -13,10 +13,10 @@
 
 .informacoes-ndvi {
     margin-bottom: 20px;
-    background-color: #e0e0e0;
-    padding: 10px;
+    /* background-color: #e0e0e0;
+    padding: 5px;
     border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); */
 }
 
 .informacoes-ndvi p {
@@ -52,8 +52,18 @@
 
 .grafico-wrapper {
     position: relative;
-    height: 400px; /* Altura do grafico */
+    height: 430px; /* Altura do grafico */
     width: 100%; /* largura do grafica */
+}
+
+.salvar-grafico-btn{
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.259);
+    background-color: #c7a37e;
+    color: white;
+    margin: 5px;
 }
 
 canvas {

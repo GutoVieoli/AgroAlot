@@ -11,7 +11,7 @@ const gerarToken = (id, nome) => {
         },
         secretKey,
         {
-            expiresIn: "600s"
+            expiresIn: "1200s"
         }
     );
     return token;

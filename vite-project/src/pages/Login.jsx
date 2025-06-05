@@ -64,7 +64,7 @@ const Login = () => {
                     <div className={styles.secEsquerda}>
 
                         <div className={styles.titulos}>
-                            <h1>AgroAlot System</h1>
+                            <h1>AgroAlot</h1>
                             <p>Faça o login para continuar.</p>
                         </div>
 

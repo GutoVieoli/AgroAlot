@@ -104,13 +104,6 @@ const getMap = async (req, res) => {
     const dataModificada = new Date(dataRecebida);
     const talhao_id = req.body.talhao_id;
 
-    last_date = await ndvi.getMostRecentCaptureDate(talhao_id)
-    if (last_date == null)
-        last_date = new Date("2022-08-01");
-    console.log(last_date)
-
-    //await popularNDVI(talhao_id, last_date)
-    
     dataModificada.setDate(dataModificada.getDate() - 5);
 
     const mapaBd = await procuraGeoJson(talhao_id)
@@ -176,18 +169,29 @@ const getMap = async (req, res) => {
     })
 }
 
-const popularNDVI = async (talhao_id, start_date) => {
 
-    start_date = new Date(start_date)
+
+
+const popularNDVI = async (req, res) => {
+
+    //const talhao_id = req.body.talhao_id;
+    const { talhao_id } = req.params;
+
+    last_date = await ndvi.getMostRecentCaptureDate(talhao_id)
+    if (last_date == null)
+        last_date = new Date("2022-06-01");
+    console.log(last_date)
+
+    start_date = new Date(last_date)
     //start_date = new Date("2022-08-01")
     start_date.setDate(start_date.getDate() + 1);
     start_date = start_date.toISOString().split('T')[0];
 
-    const endDate = new Date().toISOString().split('T')[0];
-    //const endDate = "2022-11-15"
+    //const endDate = new Date().toISOString().split('T')[0];
+    const endDate = "2025-06-05"
 
     if ( start_date > endDate )
-        return true;
+        res.send();
 
     // Pega as coordenadas da área
     const mapaBd = await procuraGeoJson(talhao_id)
@@ -201,7 +205,7 @@ const popularNDVI = async (talhao_id, start_date) => {
     const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR");
     var colecao = imageSentinel.filterBounds(aoi)
                                 .filterDate( start_date, endDate)
-                                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 70));
+                                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60));
 
     if(colecao.size().getInfo() > 0){
 
@@ -298,6 +302,7 @@ const popularNDVI = async (talhao_id, start_date) => {
         console.log(dadosTripla)
 
     }
+    res.send();
 }
 
 
@@ -311,4 +316,4 @@ const procuraGeoJson = async (talhao_id) => {
     return busca
 }
 
-module.exports = { getMap, getFreeMap, validaMap }
+module.exports = { getMap, getFreeMap, validaMap, popularNDVI }
