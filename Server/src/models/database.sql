@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nome VARCHAR(64) NOT NULL,
     email VARCHAR(64) NOT NULL UNIQUE,
     senha VARCHAR(128) NOT NULL,
-    salt VARCHAR(64) NOT NULL  -- coisa de segurança
+    salt VARCHAR(64) NOT NULL  
 );
 
 CREATE TABLE IF NOT EXISTS propriedades (

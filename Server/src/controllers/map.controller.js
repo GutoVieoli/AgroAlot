@@ -2,6 +2,14 @@ const ee = require('@google/earthengine');
 const talhoes = require('../models/talhoes.model');
 const ndvi = require('../controllers/ndvi.controller')
 
+function eeEvaluate(eeObject) {
+    return new Promise((resolve, reject) => {
+      eeObject.evaluate((result, error) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+}
 
 const validaMap = (req, res, next) => {
     if(req.body.data == '' || req.body.filtro == '') {
@@ -25,7 +33,7 @@ const calcNDVI = async (fil, customPalette) => {
     );
 
     return new Promise((resolve, reject) => {
-        NDVI.getMap({min: 0, max: 0.8, palette: customPalette}, (mapInfo) => {
+        NDVI.getMap({min: 0, max: 1, palette: customPalette}, (mapInfo) => {
             resolve( mapInfo.mapid );
         });
     })
@@ -170,139 +178,141 @@ const getMap = async (req, res) => {
 }
 
 
-
-
 const popularNDVI = async (req, res) => {
+    try {
+        //const talhao_id = req.body.talhao_id;
+        const { talhao_id } = req.params;
 
-    //const talhao_id = req.body.talhao_id;
-    const { talhao_id } = req.params;
+        last_date = await ndvi.getMostRecentCaptureDate(talhao_id)
+        if (last_date == null)
+            last_date = new Date("2022-06-01");
+        console.log(last_date)
 
-    last_date = await ndvi.getMostRecentCaptureDate(talhao_id)
-    if (last_date == null)
-        last_date = new Date("2022-06-01");
-    console.log(last_date)
+        start_date = new Date(last_date)
+        //start_date = new Date("2022-08-01")
+        start_date.setDate(start_date.getDate() + 1);
+        start_date = start_date.toISOString().split('T')[0];
 
-    start_date = new Date(last_date)
-    //start_date = new Date("2022-08-01")
-    start_date.setDate(start_date.getDate() + 1);
-    start_date = start_date.toISOString().split('T')[0];
+        //const endDate = new Date().toISOString().split('T')[0];
+        const endDate = "2025-06-20"
 
-    //const endDate = new Date().toISOString().split('T')[0];
-    const endDate = "2025-06-05"
+        if ( start_date > endDate )
+            res.send();
 
-    if ( start_date > endDate )
+        // Pega as coordenadas da área
+        const mapaBd = await procuraGeoJson(talhao_id)
+        const jsonMapa = mapaBd['geojson_data']
+        const coordinates = jsonMapa.features[0].geometry.coordinates[0];
+
+        // Cria uma geometria para as cordenadas
+        const aoi = ee.Geometry.Polygon(coordinates);
+
+        // Captura todas as imagens entre as datas que tenham até X de cloud
+        const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR");
+        var colecao = imageSentinel.filterBounds(aoi)
+                                    .filterDate( start_date, endDate)
+                                    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60));
+
+        const size = await eeEvaluate(colecao.size());
+        if(size > 0){
+
+            const listaImagens = await colecao.toList(colecao.size()).getInfo();
+            console.log(`Número de imagens encontradas: ${listaImagens.length}`);
+
+
+            let dadosTripla = [] // Cobertura de nuvem, Text ID, e data de aquisicao 
+
+            //listaImagens.map(async (imagemInfo, index) => {
+            for (const imagemInfo of listaImagens) {
+                console.log('Processando')
+                const imagemId = imagemInfo.id;
+                const imagem = ee.Image(imagemId);
+        
+                // Obtém a data de aquisição
+                const data = ee.Date(imagem.get('system:time_start')).format('YYYY-MM-dd');
+                const dataValue = await data.getInfo();
+
+                // Recorta a imagem para a AOI
+                const imagemClipada = imagem.clip(aoi);
+
+                // Seleciona a banda MSK_CLDPRB para máscara de nuvens (valores acima de 50 indicam alta probabilidade de nuvens)
+                const maskNuvens = imagemClipada.select('MSK_CLDPRB').gt(5);
+                const shadowMask = imagemClipada.select('SCL').eq(3);
+
+                // Conta o número total de pixels na AOI
+                const totalPixels = imagemClipada.select('B4').reduceRegion({
+                    reducer: ee.Reducer.count(),
+                    geometry: aoi,
+                    scale: 10, // Resolução de 10 metros para Sentinel-2
+                    maxPixels: 1e9
+                });
+
+                // Conta o número de pixels nublados na AOI
+                const cloudPixels = maskNuvens.reduceRegion({
+                    reducer: ee.Reducer.sum(),
+                    geometry: aoi,
+                    scale: 10,
+                    maxPixels: 1e9
+                });
+
+                // Conta o número de pixels sombreados
+                const shadowPixels = shadowMask.reduceRegion({
+                    reducer: ee.Reducer.sum(),
+                    geometry: aoi,
+                    scale: 10, 
+                    maxPixels: 1e9
+                })
+
+                const NDVI = imagemClipada.expression(
+                    '(nir - red) / (nir + red)',
+                    {
+                        'nir': imagemClipada.select('B8'), // NIR band
+                        'red': imagemClipada.select('B4') // Red  band
+                    }
+                ).rename('NDVI');
+                var meanNDVI = NDVI.reduceRegion({
+                    reducer: ee.Reducer.mean(),
+                    geometry: aoi,
+                    scale: 10, // Escala em metros, ajuste conforme necessário
+                    maxPixels: 1e9
+                });
+
+
+                // Obtém os valores como números
+                const totalPixelsValue = await totalPixels.get('B4').getInfo();
+                const cloudPixelsValue = await cloudPixels.get('MSK_CLDPRB').getInfo();
+                const shadowPixelsValue = await shadowPixels.get('SCL').getInfo();
+                //console.log('Nuvens: '+ (cloudPixelsValue / totalPixelsValue) * 100);
+                //console.log('Sombras: '+ (shadowPixelsValue / totalPixelsValue) * 100);
+
+                // Calcula a porcentagem de cobertura de nuvens na área clipada
+                let porcentagemNuvensClipada = 0;
+                if (totalPixelsValue > 0) {
+                    porcentagemNuvensClipada = parseFloat( ( (cloudPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
+                    porcentagemSombrasClipada = parseFloat( ( (shadowPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
+                    console.log('Data: '+ dataValue + ' . Sombras: '+ porcentagemSombrasClipada + " . Nuvens: " + porcentagemNuvensClipada)
+
+                    if(porcentagemNuvensClipada < 8 && porcentagemSombrasClipada < 20){
+                        const ndviMedio = meanNDVI.get('NDVI') ? await meanNDVI.get('NDVI').getInfo() : null;
+                        console.log("Ndvi: " + ndviMedio + "\n^^^ Ele de cima entrou ^^^\n")
+                        const taxaDeNuvens = porcentagemNuvensClipada + (porcentagemSombrasClipada * 0.65)
+                        dadosTripla.push([dataValue, ndviMedio.toFixed(3), parseFloat(taxaDeNuvens), talhao_id]);
+                    }
+                }
+
+
+            //});
+            };
+
+            //await Promise.all(promises);
+            await ndvi.inserirNDVI(dadosTripla)
+            console.log(dadosTripla)
+
+        }
         res.send();
-
-    // Pega as coordenadas da área
-    const mapaBd = await procuraGeoJson(talhao_id)
-    const jsonMapa = mapaBd['geojson_data']
-    const coordinates = jsonMapa.features[0].geometry.coordinates[0];
-
-    // Cria uma geometria para as cordenadas
-    const aoi = ee.Geometry.Polygon(coordinates);
-
-    // Captura todas as imagens entre as datas que tenham até X de cloud
-    const imageSentinel = ee.ImageCollection("COPERNICUS/S2_SR");
-    var colecao = imageSentinel.filterBounds(aoi)
-                                .filterDate( start_date, endDate)
-                                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60));
-
-    if(colecao.size().getInfo() > 0){
-
-        const listaImagens = await colecao.toList(colecao.size()).getInfo();
-        console.log(`Número de imagens encontradas: ${listaImagens.length}`);
-
-
-        let dadosTripla = [] // Cobertura de nuvem, Text ID, e data de aquisicao 
-
-        //listaImagens.map(async (imagemInfo, index) => {
-        for (const imagemInfo of listaImagens) {
-            console.log('Processando')
-            const imagemId = imagemInfo.id;
-            const imagem = ee.Image(imagemId);
-    
-            // Obtém a data de aquisição
-            const data = ee.Date(imagem.get('system:time_start')).format('YYYY-MM-dd');
-            const dataValue = await data.getInfo();
-
-            // Recorta a imagem para a AOI
-            const imagemClipada = imagem.clip(aoi);
-
-            // Seleciona a banda MSK_CLDPRB para máscara de nuvens (valores acima de 50 indicam alta probabilidade de nuvens)
-            const maskNuvens = imagemClipada.select('MSK_CLDPRB').gt(5);
-            const shadowMask = imagemClipada.select('SCL').eq(3);
-
-            // Conta o número total de pixels na AOI
-            const totalPixels = imagemClipada.select('B4').reduceRegion({
-                reducer: ee.Reducer.count(),
-                geometry: aoi,
-                scale: 10, // Resolução de 10 metros para Sentinel-2
-                maxPixels: 1e9
-            });
-
-            // Conta o número de pixels nublados na AOI
-            const cloudPixels = maskNuvens.reduceRegion({
-                reducer: ee.Reducer.sum(),
-                geometry: aoi,
-                scale: 10,
-                maxPixels: 1e9
-            });
-
-            // Conta o número de pixels sombreados
-            const shadowPixels = shadowMask.reduceRegion({
-                reducer: ee.Reducer.sum(),
-                geometry: aoi,
-                scale: 10, 
-                maxPixels: 1e9
-            })
-
-            const NDVI = imagemClipada.expression(
-                '(nir - red) / (nir + red)',
-                {
-                    'nir': imagemClipada.select('B8'), // NIR band
-                    'red': imagemClipada.select('B4') // Red  band
-                }
-            ).rename('NDVI');
-            var meanNDVI = NDVI.reduceRegion({
-                reducer: ee.Reducer.mean(),
-                geometry: aoi,
-                scale: 10, // Escala em metros, ajuste conforme necessário
-                maxPixels: 1e9
-            });
-
-
-            // Obtém os valores como números
-            const totalPixelsValue = await totalPixels.get('B4').getInfo();
-            const cloudPixelsValue = await cloudPixels.get('MSK_CLDPRB').getInfo();
-            const shadowPixelsValue = await shadowPixels.get('SCL').getInfo();
-            //console.log('Nuvens: '+ (cloudPixelsValue / totalPixelsValue) * 100);
-            //console.log('Sombras: '+ (shadowPixelsValue / totalPixelsValue) * 100);
-
-            // Calcula a porcentagem de cobertura de nuvens na área clipada
-            let porcentagemNuvensClipada = 0;
-            if (totalPixelsValue > 0) {
-                porcentagemNuvensClipada = parseFloat( ( (cloudPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
-                porcentagemSombrasClipada = parseFloat( ( (shadowPixelsValue / totalPixelsValue) * 100 ).toFixed(2) );
-                console.log('Data: '+ dataValue + ' . Sombras: '+ porcentagemSombrasClipada + " . Nuvens: " + porcentagemNuvensClipada)
-
-                if(porcentagemNuvensClipada < 8 && porcentagemSombrasClipada < 20){
-                    const ndviMedio = meanNDVI.get('NDVI') ? await meanNDVI.get('NDVI').getInfo() : null;
-                    console.log("Ndvi: " + ndviMedio + "\n^^^ Ele de cima entrou ^^^\n")
-                    const taxaDeNuvens = porcentagemNuvensClipada + (porcentagemSombrasClipada * 0.65)
-                    dadosTripla.push([dataValue, ndviMedio.toFixed(3), parseFloat(taxaDeNuvens), talhao_id]);
-                }
-            }
-
-
-        //});
-        };
-
-        //await Promise.all(promises);
-        await ndvi.inserirNDVI(dadosTripla)
-        console.log(dadosTripla)
-
+    } catch (error) {
+        console.log(error);
     }
-    res.send();
 }
 
 
